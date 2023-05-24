@@ -4,9 +4,9 @@
 #include "osapi.h"
 #include "mem.h"
 #include "user_interface.h"
-#include "cont.h"
 
-/// custom function for the web server
+/// Custom libraries for uart_init, printf, gets, etc...
+#include "uart_io.h"
 #include "serial_io.h"
 
 // Is used for the ets_loop_task which is explained inside of user_init
@@ -16,8 +16,29 @@ static ETSEvent loop_queue[LOOP_QUEUE_LENGTH];
 
 static void loop_task(ETSEvent* events)
 {
-	
+	printf("Hello from loop\n");
 }
+
+#define TIMER_ON 1
+#define TIMER_INTERVAL 500
+#define TIMER_ARGS NULL
+
+#if TIMER_ON
+
+os_timer_t timer;
+
+void ICACHE_FLASH_ATTR timer_func(void *arg)
+{
+	/*
+	*	Any repetitive code you need run at a constant interval.
+	*	For example blink sketch that turns on and off GPIO.
+	*	There can be potiental race condition with the loop.
+	*	Be careful.
+	*/
+	printf("Hello from timer\n");
+}
+
+#endif /* TIMER_ON */
 
 /* 
 *	The SDK calls user_init as the entry point function for the user
@@ -28,6 +49,11 @@ void user_init()
 {
 	// Initalize uart and set baud rate by setting the uart clock divider
 	uart_init(115200);
+
+	#if TIMER_ON
+	os_timer_setfn(&timer, timer_func, TIMER_ARGS);
+	os_timer_arm(&timer, TIMER_INTERVAL, 1); // TIMER_INTERVAL in ms, repeating
+	#endif /* TIMER_ON */
 
 	/*
 	*	Since we only have 3.2 seconds you might wonder how we

@@ -1,8 +1,13 @@
 #ifndef SERIAL_IO_H
 #define SERIAL_IO_H
 
+/// STDLIB
 #include <stdarg.h>
 #include <stddef.h>
+
+/// Proprietary SDK
+#include "mem.h"
+
 #include "uart_io.h"
 
 extern void serial_write(char* buffer);
