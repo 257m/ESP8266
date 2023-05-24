@@ -117,10 +117,6 @@ typedef struct {
 #define PULLUP_ENA		0x80
 #define PULLUP2_ENA		0x40	/* XXX */
 
-#ifdef INCLUDING_ARDUINO
-  #define uart_init _uart_init
-#endif
-
 extern void uart_init(int baud);
 extern void uart_fifo_reset(void);
 extern void uart_putchar(unsigned char c);

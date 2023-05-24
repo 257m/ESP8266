@@ -29,23 +29,23 @@ extern unsigned int bfloattostrdec(char* buffer, unsigned int buffer_size, unsig
 
 extern unsigned int str_len(char* str);
 
-#ifdef INCLUDING_ARDUINO | gets
-  #undef gets
-  #define gets _gets
+#ifdef gets
+	#undef gets
+	#define gets _gets
 #endif
 
 extern void gets(char* str, unsigned int size);
 
-#ifdef INCLUDING_ARDUINO | vsnprintf
-  #undef vsnprintf
-  #define vsnprintf _vsnprintf
+#ifdef vsnprintf
+	#undef vsnprintf
+	#define vsnprintf _vsnprintf
 #endif
 
 extern unsigned int vsnprintf(char* buffer, unsigned int buffer_size, const char* format, va_list args);
 
-#ifdef INCLUDING_ARDUINO | printf
-  #undef printf
-  #define printf _printf
+#ifdef printf
+	#undef printf
+	#define printf _printf
 #endif
 
 extern unsigned int printf(const char *format, ...);
