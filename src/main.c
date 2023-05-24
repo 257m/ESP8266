@@ -9,9 +9,16 @@
 #include "uart_io.h"
 #include "serial_io.h"
 
+// No gurantee on my part that this function will run before the loop
+static void setup()
+{
+	printf("Hello from setup\n");
+}
+
 // Is used for the ets_loop_task which is explained inside of user_init
 #define LOOP_TASK_PRIORITY 1
 #define LOOP_QUEUE_LENGTH 1
+// Honestly probabaly never gonna to use this queue
 static ETSEvent loop_queue[LOOP_QUEUE_LENGTH];
 
 static void loop_task(ETSEvent* events)
@@ -24,6 +31,9 @@ static void loop_task(ETSEvent* events)
 #define TIMER_ARGS NULL
 
 #if TIMER_ON
+
+#define ONCE 0
+#define REPEAT 1
 
 os_timer_t timer;
 
@@ -52,7 +62,7 @@ void user_init()
 
 	#if TIMER_ON
 	os_timer_setfn(&timer, timer_func, TIMER_ARGS);
-	os_timer_arm(&timer, TIMER_INTERVAL, 1); // TIMER_INTERVAL in ms, repeating
+	os_timer_arm(&timer, TIMER_INTERVAL, REPEAT); // TIMER_INTERVAL in ms, repeating
 	#endif /* TIMER_ON */
 
 	/*
@@ -92,4 +102,6 @@ void user_init()
 	*/
 
 	ets_loop_task(loop_task, LOOP_TASK_PRIORITY, loop_queue, LOOP_QUEUE_LENGTH);
+
+	system_init_done_cb(&setup);
 }
