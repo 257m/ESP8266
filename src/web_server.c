@@ -14,9 +14,9 @@
 void web_server_init()
 {
 	struct station_config stconfig = {
-		.ssid = SSID;
-		.password = PASSWORD;
-	}
+		.ssid = SSID,
+		.password = PASSWORD,
+	};
 	stconfig.threshold.authmode = AUTH_WPA_WPA2_PSK;
 	stconfig.threshold.rssi = 84;
 
@@ -73,9 +73,10 @@ void web_server_receive(void *arg, char *pusrdata, unsigned short length)
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
 	printf("Received data:\r\n");
 	const char html [] = "<!DOCTYPE html><html>hello, world</html>";
-	const char* header = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: %ld\r\n\r\n", sizeof(html));
+	char* header = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: %ld\r\n\r\n", sizeof(html));
 	unsigned int buf_size = sizeof(html) + str_len(header) + 1;
-	char buf [buf_size] = "";
+	char buf [buf_size];
+	os_memset(buf, 0, buf_size);
 	unsigned int i = 0;
 	while (i < sizeof(html))
 		buf[i] = html[i++];
