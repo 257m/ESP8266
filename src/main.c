@@ -1,5 +1,6 @@
 /// Proprietary SDK includes
 #include "ets_sys.h"
+#include "espconn.h"
 #include "os_type.h"
 #include "osapi.h"
 #include "mem.h"
@@ -8,12 +9,7 @@
 /// Custom libraries for uart_init, printf, gets, etc...
 #include "uart_io.h"
 #include "serial_io.h"
-
-// No guarantee on my part that this function will run before the loop
-static void setup()
-{
-	printf("Hello from setup\n");
-}
+#include "web_server.h"
 
 // Is used for the ets_loop_task which is explained inside of user_init
 #define LOOP_TASK_PRIORITY 1
@@ -110,5 +106,5 @@ void user_init()
 
 	ets_loop_task(loop_task, LOOP_TASK_PRIORITY, loop_queue, LOOP_QUEUE_LENGTH);
 
-	system_init_done_cb(&setup);
+	system_init_done_cb(&web_server_init);
 }
