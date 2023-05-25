@@ -1,10 +1,44 @@
+/// Proprietary SDK includes
+#include "ets_sys.h"
+#include "espconn.h"
+#include "os_type.h"
+#include "osapi.h"
+#include "mem.h"
+#include "user_interface.h"
+
+/// Custom libraries for uart_init, printf, gets, etc...
+#include "uart_io.h"
+#include "serial_io.h"
 #include "web_server.h"
 
 void web_server_init()
 {
+	struct station_config stconfig = {
+		.ssid = SSID;
+		.password = PASSWORD;
+	}
+	stconfig.threshold.authmode = AUTH_WPA_WPA2_PSK;
+	stconfig.threshold.rssi = 84;
+
+	printf("connecting to %s with %s\r\nrssi: %d auth: %d\r\n", stconfig.ssid, stconfig.password, stconfig.threshold.rssi, stconfig.threshold.authmode);
+
+	wifi_set_opmode(STATION_MODE);
+	wifi_station_set_hostname("Temp Hostname");
+
+	if (!wifi_station_set_config(&stconfig))
+		printf("ESP8266 not set station config!\r\n");
+	if (wifi_station_dhcpc_status() == 0)
+		wifi_station_dhcpc_start();
+
+	wifi_station_disconnect();
+	wifi_station_connect();
+
+	wifi_station_set_reconnect_policy(TRUE);
+	wifi_station_set_auto_connect(TRUE);
+
     static struct espconn esp_conn;
     static esp_tcp esptcp;
-    //Fill the connection structure, including "listen" port
+    // Fill the connection structure, including "listen" port
     esp_conn.type = ESPCONN_TCP;
     esp_conn.state = ESPCONN_NONE;
     esp_conn.proto.tcp = &esptcp;
