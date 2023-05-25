@@ -20,10 +20,15 @@ static ETSEvent loop_queue[LOOP_QUEUE_LENGTH];
 
 static void loop_task(ETSEvent* events)
 {
-	printf("Hello from loop\n");
+	/*
+	*	Non web server code will go in here.
+	*	Sensors readers, pin flashers, etc...
+	*	It will loop continually
+	*/
+	//printf("Hello from loop\n");
 }
 
-#define TIMER_ON 1
+#define TIMER_ON 0
 #define TIMER_INTERVAL 500
 #define TIMER_ARGS NULL
 
