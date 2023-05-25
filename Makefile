@@ -1,5 +1,5 @@
 CC = "C:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\xtensa-lx106-elf-gcc\\3.0.0-newlib4.0.0-gnu23-48f7b08/bin/xtensa-lx106-elf-gcc"
-CFLAGS = "-IC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/include" -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
+CFLAGS = "-IC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/include" "-IC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/lwip2/include" "-IC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/libc/xtensa-lx106-elf/include" -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 SDK_LINKER_PATH = "-LC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/lib/NONOSDK22x_190703"
 LDFLAGS = SDK_LINKER_PATH
 SERIAL_PORT = COM5
