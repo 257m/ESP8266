@@ -160,7 +160,7 @@ void gets(char* str, unsigned int size)
 	const char* last = str + size;
 	while (str < last) {
 		if ((*str = uart_getchar()) == '\n')
-			break;
+			return;
 		str++;
 	}
 }
@@ -222,37 +222,37 @@ unsigned int vsnprintf
 }
 
 unsigned int printf(const char *format, ...) {
-		va_list args;
+	va_list args;
+	va_start(args, format);
+	char temp[64] = "";
+	char* buffer = temp;
+	unsigned int len = vsnprintf(temp, sizeof(temp), format, args);
+	va_end(args);
+	if (len > sizeof(temp) - 1) {
+		char* buffer = (char*)malloc(len + 1);
+		if (!buffer)
+			return 0;
 		va_start(args, format);
-		char temp[64] = "";
-		char* buffer = temp;
-		unsigned int len = vsnprintf(temp, sizeof(temp), format, args);
+		len = vsnprintf(buffer, len + 1, format, args);
 		va_end(args);
-		if (len > sizeof(temp) - 1) {
-				char* buffer = (char*)malloc(len + 1);
-				if (!buffer)
-						return 0;
-				va_start(args, format);
-				len = vsnprintf(buffer, len + 1, format, args);
-				va_end(args);
-		}
-		serial_write(buffer);
-		if (buffer != temp)
-				free(buffer);
-		return len;
+	}
+	serial_write(buffer);
+	if (buffer != temp)
+		free(buffer);
+	return len;
 }
 
 char* aprintf(const char *format, ...) {
-		va_list args;
-		va_start(args, format);
-		unsigned int len = vsnprintf(NULL, 0, format, args);
-		va_end(args);
-		char* buffer = (char*)malloc(len + 1);
-		if (!buffer)
-			return NULL;
-		va_start(args, format);
-		vsnprintf(buffer, len + 1, format, args);
-		va_end(args);
+	va_list args;
+	va_start(args, format);
+	unsigned int len = vsnprintf(NULL, 0, format, args);
+	va_end(args);
+	char* buffer = (char*)malloc(len + 1);
+	if (!buffer)
+		return NULL;
+	va_start(args, format);
+	vsnprintf(buffer, len + 1, format, args);
+	va_end(args);
  
-		return buffer;
+	return buffer;
 }
