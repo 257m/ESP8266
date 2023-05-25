@@ -11,7 +11,7 @@
 #include "serial_io.h"
 #include "web_server.h"
 
-// Is used for the ets_loop_task which is explained inside of user_init
+// Is used for the ets_task which is explained inside of user_init
 #define LOOP_TASK_PRIORITY 1
 #define LOOP_QUEUE_LENGTH 1
 // Honestly probably never gonna to use this queue but I don't know if
@@ -109,7 +109,7 @@ void user_init()
 	*	uint8 qlen is the size/length of the queue
 	*/
 
-	ets_loop_task(loop_task, LOOP_TASK_PRIORITY, loop_queue, LOOP_QUEUE_LENGTH);
+	ets_task(loop_task, LOOP_TASK_PRIORITY, loop_queue, LOOP_QUEUE_LENGTH);
 
 	system_init_done_cb(&web_server_init);
 }

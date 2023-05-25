@@ -1,6 +1,5 @@
 #ifndef UART_IO_H
 #define UART_IO_H
-#include "settings.h"
 
 #define UART_BASE	0x60000000
 #define UART1_BASE	0x60000F00

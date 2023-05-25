@@ -34,24 +34,18 @@ extern unsigned int bfloattostrdec(char* buffer, unsigned int buffer_size, unsig
 
 extern unsigned int str_len(char* str);
 
-#ifdef gets
-	#undef gets
-	#define gets _gets
-#endif
+#undef gets
+#define gets _gets
 
 extern void gets(char* str, unsigned int size);
 
-#ifdef vsnprintf
-	#undef vsnprintf
-	#define vsnprintf _vsnprintf
-#endif
+#undef vsnprintf
+#define vsnprintf _vsnprintf
 
 extern unsigned int vsnprintf(char* buffer, unsigned int buffer_size, const char* format, va_list args);
 
-#ifdef printf
-	#undef printf
-	#define printf _printf
-#endif
+#undef printf
+#define printf _printf
 
 extern unsigned int printf(const char *format, ...);
 
