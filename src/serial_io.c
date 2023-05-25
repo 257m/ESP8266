@@ -121,7 +121,7 @@ unsigned int bluinttostr
 	return digits;
 }
 
-double rudimentary_pow10(unsigned int n)
+inline double rudimentary_pow10(unsigned int n)
 {
 	double ans = 1;
 	while((n--))
