@@ -18,7 +18,8 @@ static void setup()
 // Is used for the ets_loop_task which is explained inside of user_init
 #define LOOP_TASK_PRIORITY 1
 #define LOOP_QUEUE_LENGTH 1
-// Honestly probabaly never gonna to use this queue
+// Honestly probably never gonna to use this queue but I don't know if
+// the sdk even accesses the pointer I pass. Better safe than sorry
 static ETSEvent loop_queue[LOOP_QUEUE_LENGTH];
 
 static void loop_task(ETSEvent* events)
@@ -58,7 +59,7 @@ void ICACHE_FLASH_ATTR timer_func(void *arg)
 void user_init()
 {
 	// Initalize uart and set baud rate by setting the uart clock divider
-	uart_init(115200);
+	uart_init(9600);
 
 	#if TIMER_ON
 	os_timer_setfn(&timer, timer_func, TIMER_ARGS);
