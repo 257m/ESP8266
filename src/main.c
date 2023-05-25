@@ -53,8 +53,8 @@ void ICACHE_FLASH_ATTR timer_func(void *arg)
 
 /* 
 *	The SDK calls user_init as the entry point function for the user
-*	The SDK runs a watchdog timer on the function and we don't return in
-*	around 3.2 seconds we get reset (not good) so we have to be quick.
+*	The SDK runs a watchdog timer on the function and if we don't return
+*	in around 3.2 seconds we get reset (not good) so we have to be quick.
 *	
 *	Technically I lied user_init is not the closest accesible entry point
 *	for the user. That would be call_user_start but I can't touch that if
