@@ -27,8 +27,10 @@ void web_server_init()
 
 	if (!wifi_station_set_config(&stconfig))
 		printf("ESP8266 not set station config!\r\n");
-	if (wifi_station_dhcpc_status() == 0)
+	if (wifi_station_dhcpc_status() == 0) {
+		printf("Starting DHCPC...\r\n");
 		wifi_station_dhcpc_start();
+	}
 
 	wifi_station_disconnect();
 	wifi_station_connect();
