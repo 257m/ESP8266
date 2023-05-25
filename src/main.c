@@ -9,7 +9,7 @@
 #include "uart_io.h"
 #include "serial_io.h"
 
-// No gurantee on my part that this function will run before the loop
+// No guarantee on my part that this function will run before the loop
 static void setup()
 {
 	printf("Hello from setup\n");
@@ -43,7 +43,7 @@ void ICACHE_FLASH_ATTR timer_func(void *arg)
 	/*
 	*	Any repetitive code you need run at a constant interval.
 	*	For example blink sketch that turns on and off GPIO.
-	*	There can be potiental race condition with the loop.
+	*	There can be a potiental race condition with the loop.
 	*	Be careful.
 	*/
 	printf("Hello from timer\n");
@@ -54,7 +54,13 @@ void ICACHE_FLASH_ATTR timer_func(void *arg)
 /* 
 *	The SDK calls user_init as the entry point function for the user
 *	The SDK runs a watchdog timer on the function and we don't return in
-*	around 3.2 seconds we get reset (not good) so we have to be quick
+*	around 3.2 seconds we get reset (not good) so we have to be quick.
+*	
+*	Technically I lied user_init is not the closest accesible entry point
+*	for the user. That would be call_user_start but I can't touch that if
+*	I want to keep Wifi working because it does some secret SDK stuff that
+*	I can't hope to possibly replicate given the current resources at hand.
+*	(Proprietary software/hardware is annoying)
 */
 void user_init()
 {
