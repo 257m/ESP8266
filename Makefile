@@ -10,7 +10,7 @@ FLASH_SIZE = 1m
 EXE = main.bin
 
 # This is the default target that is going to be built when we run 'make'
-all: clean $(EXE) upload
+all: $(EXE) upload
 
 # This is the directory where our source will be stored
 SRC_DIR = src
@@ -22,7 +22,7 @@ SRC = $(wildcard src/**/*.c) $(wildcard src/*.c) $(wildcard src/**/**/*.c) $(wil
 OBJ_DIR = obj
 
 # This is the list of object files that we need to create
-OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.elf, $(SRC))
+OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 # This is the rule to upload our code to the esp
 upload:
@@ -44,4 +44,4 @@ $(OBJ_DIR)/**/**/%.o: src/**/**/%.c
 
 # This is the rule to delete the old executable before recompiling
 clean:
-	rm -f $(EXE)
+	rm $(EXE)
