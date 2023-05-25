@@ -75,7 +75,7 @@ void web_server_receive(void *arg, char *pusrdata, unsigned short length)
 	const char html [] = "<!DOCTYPE html><html>hello, world</html>";
 	const char* header = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: %ld\r\n\r\n", sizeof(html));
 	unsigned int buf_size = sizeof(html) + str_len(header) + 1;
-	const char* buf [buf_size] = "";
+	char buf [buf_size] = "";
 	unsigned int i = 0;
 	while (i < sizeof(html))
 		buf[i] = html[i++];
