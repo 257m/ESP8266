@@ -9,6 +9,7 @@
 
 #define UART_CLOCK	(80 * 1000 * 1000)
 
+// Much better than uart_register.h and using defines for each
 typedef struct {
 	volatile unsigned long fifo;		/* 00 */
 	volatile unsigned long int_raw;		/* 04 */
@@ -76,7 +77,7 @@ typedef struct {
 #define C1_RX_FTHR	0x007F0000	/* Rx flow control threshold */
 
 #define C1_TX_EMPTY	0x00007F00	/* Tx empty threshold */
-#define C1_RX_FULL	0x0000007f	/* Rx full threshold */
+#define C1_RX_FULL	0x0000007F	/* Rx full threshold */
 
 /* ------------------------------------------------ */
 /* ------------------------------------------------ */
