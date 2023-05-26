@@ -22,7 +22,7 @@ SRC = $(wildcard src/**/*.c) $(wildcard src/*.c) $(wildcard src/**/**/*.c) $(wil
 OBJ_DIR = obj
 
 # This is the list of object files that we need to create
-OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SRC))
+OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.elf, $(SRC))
 
 # This is the rule to upload our code to the esp
 upload:
@@ -33,13 +33,13 @@ $(EXE): $(OBJ)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # These are the rules to build the object files
-$(OBJ_DIR)/%.o: src/%.c
+$(OBJ_DIR)/%.elf: src/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(OBJ_DIR)/**/%.o: src/**/%.c
+$(OBJ_DIR)/**/%.elf: src/**/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(OBJ_DIR)/**/**/%.o: src/**/**/%.c
+$(OBJ_DIR)/**/**/%.elf: src/**/**/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 # This is the rule to delete the old executable before recompiling
