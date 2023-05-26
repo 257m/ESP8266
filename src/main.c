@@ -25,7 +25,7 @@ static void loop_task(ETSEvent* events)
 	*	Sensors readers, pin flashers, etc...
 	*	It will loop continually
 	*/
-	//printf("Hello from loop\n");
+	printf("Hello from loop\n");
 }
 
 #define TIMER_ON 0
