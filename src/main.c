@@ -77,7 +77,7 @@ void user_init()
 	*	Since we only have 3.2 seconds you might wonder how we
 	*	are going to run an entire program in the that time frame.
 	*	Not even mentioning the fact that we have to have a constantly
-	*	running web server. Well lucky user_init is not the only function
+	*	running web server. Well luckily user_init is not the only function
 	*	of ours the SDK will call. user_init is only to setup the actual
 	*	program. The SDK has a function that we can pass a function pointer
 	*	to and it will call that function in a loop. Very similar to the arduino
