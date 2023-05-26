@@ -17,13 +17,13 @@ all: $(EXE) upload
 SRC_DIR = src
 
 # This is the list of all source files
-SRC = $(wildcard src/**/*.c) $(wildcard src/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c)
+SRC = $(foreach sdir, $(SRC_DIR), $(wildcard $(sdir)/*.c))
 
 # This is the directory where our object files will be stored
 OBJ_DIR = obj
 
 # This is the list of object files that we need to create
-OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.elf, $(SRC))
+OBJ = $(patsubst %.c, $(OBJ_DIR)/%.elf, $(SRC))
 
 # This is the rule to upload our code to the esp
 upload:
