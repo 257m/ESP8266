@@ -26,7 +26,7 @@ OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.elf, $(SRC))
 
 # This is the rule to upload our code to the esp
 upload:
-	esptool.py --port SERIAL_PORT write_flash -fm FLASH_MODE -fs FLASH_SIZE 0x00000 main.bin
+	esptool.py --port SERIAL_PORT --baud 9600 write_flash -fm FLASH_MODE -fs FLASH_SIZE 0x00000 main.bin
 
 # This is the rule to build the executable
 $(EXE): $(OBJ)
