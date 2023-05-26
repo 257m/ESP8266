@@ -34,13 +34,13 @@ $(EXE): $(OBJ)
 	$(CC) $(EXTRA_LDFLAGS) $^ -o $@
 
 # These are the rules to build the object files
-$(OBJ_DIR)/%.elf: src/%.c
+$(OBJ_DIR)/%.elf: $(SRC_DIR)/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(OBJ_DIR)/**/%.elf: src/**/%.c
+$(OBJ_DIR)/**/%.elf: $(SRC_DIR)/**/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(OBJ_DIR)/**/**/%.elf: src/**/**/%.c
+$(OBJ_DIR)/**/**/%.elf: $(SRC_DIR)/**/**/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 # This is the rule to delete the old executable before recompiling
