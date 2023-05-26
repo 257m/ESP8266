@@ -4,6 +4,8 @@ SDK_LINKER_PATH = "-LC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\e
 EXTRA_LDFLAGS = $(SDK_LINKER_PATH) -nostdlib
 SERIAL_PORT = COM5
 BAUD_RATE = 9600
+PYTHON = "C:\Users\alim2790\AppData\Local\Arduino15\packages\esp8266\tools\python3\3.7.2-post1/python3"
+UPLOAD_SCRIPT = "C:\Users\alim2790\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.0.0/tools/upload.py"
 
 # This is the name of the executable we are going to create
 EXE = main.bin
@@ -25,7 +27,7 @@ OBJ = $(patsubst src/%.c, $(OBJ_DIR)/%.elf, $(SRC))
 
 # This is the rule to upload our code to the esp
 upload:
-	C:\Users\alim2790\AppData\Local\Arduino15\packages\esp8266\tools\python3\3.7.2-post1/python3 C:\Users\alim2790\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.0.0/tools/upload.py --chip esp8266 --port $(SERIAL_PORT) --baud $(BAUD_RATE) --before default_reset --after hard_reset write_flash 0x0 $(EXE)
+	$(PYTHON) $(UPLOAD_SCRIPT) --chip esp8266 --port $(SERIAL_PORT) --baud $(BAUD_RATE) --before default_reset --after hard_reset write_flash 0x0 $(EXE)
 
 # This is the rule to build the executable
 $(EXE): $(OBJ)
