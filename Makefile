@@ -23,7 +23,7 @@ SRC = $(wildcard $(SRC_DIR)/*.c) $(foreach sdir, $(SRC_DIR), $(wildcard $(sdir)/
 OBJ_DIR = obj
 
 # This is the list of object files that we need to create
-OBJ = $(patsubst %.c, $(OBJ_DIR)/%.elf, $(SRC))
+OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.elf, $(SRC))
 
 # This is the rule to upload our code to the esp
 upload:
