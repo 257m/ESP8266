@@ -17,7 +17,7 @@ all: $(EXE) upload
 SRC_DIR = src
 
 # This is the list of all source files
-SRC = $(foreach sdir, $(SRC_DIR), $(wildcard $(sdir)/*.c))
+SRC = $(shell find src -name "*.c")
 
 # This is the directory where our object files will be stored
 OBJ_DIR = obj
