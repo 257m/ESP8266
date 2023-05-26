@@ -3,8 +3,7 @@ CFLAGS = "-IC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\h
 SDK_LINKER_PATH = "-LC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/libc/xtensa-lx106-elf/lib" "-LC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/lib" "-LC:\\Users\\alim2790\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.0.0/tools/sdk/lib/NONOSDK22x_190703" -Wl,--gc-sections -Wl,-wrap,system_restart_local -Wl,-wrap,spi_flash_read -lhal -lphy -lpp -lnet80211 -llwip2-536-feat -lwpa -lcrypto -lmain -lwps -lbearssl -lespnow -lsmartconfig -lairkiss -lwpa2 -lm -lc -lgcc
 EXTRA_LDFLAGS = $(SDK_LINKER_PATH) -nostdlib
 SERIAL_PORT = COM5
-FLASH_MODE = dout
-FLASH_SIZE = 1m
+BAUD_RATE = 9600
 
 # This is the name of the executable we are going to create
 EXE = main.bin
