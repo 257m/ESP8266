@@ -17,7 +17,7 @@ all: $(EXE) upload
 SRC_DIR = src
 
 # This is the list of all source files
-SRC = $(shell find src -name "*.c")
+SRC = $(shell find $(SRC_DIR) -type f -iname '*.c')
 
 # This is the directory where our object files will be stored
 OBJ_DIR = obj
