@@ -1,10 +1,10 @@
 /// Proprietary SDK includes
-#include "ets_sys.h"
-#include "espconn.h"
-#include "os_type.h"
-#include "osapi.h"
-#include "mem.h"
-#include "user_interface.h"
+#include <ets_sys.h>
+#include <espconn.h>
+#include <os_type.h>
+#include <osapi.h>
+#include <mem.h>
+#include <user_interface.h>
 
 /// Custom libraries for uart_init, printf, gets, etc...
 #include "uart_io.h"
@@ -80,6 +80,7 @@ void user_init()
 	// Initalize uart and set baud rate by setting the uart clock divider
 	uart_init(9600);
 	serial_write("Initialized UART\n");
+	ets_printf("SDK is functional\n");
 
 	#if TIMER_ON
 	os_timer_setfn(&timer, timer_func, TIMER_ARGS);
