@@ -79,7 +79,7 @@ void user_init()
 {
 	// Initalize uart and set baud rate by setting the uart clock divider
 	uart_init(9600);
-	printf("Initialized UART\n");
+	serial_write("Initialized UART\n");
 
 	#if TIMER_ON
 	os_timer_setfn(&timer, timer_func, TIMER_ARGS);

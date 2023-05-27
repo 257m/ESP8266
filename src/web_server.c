@@ -73,18 +73,10 @@ void web_server_receive(void *arg, char *pusrdata, unsigned short length)
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
 	printf("Received data:\r\n"); // Would print pusrdata but not sure if null terminated
 	const char html [] = "<!DOCTYPE html><html>hello, world</html>";
-	char* header = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: %ld\r\n\r\n", sizeof(html));
-	unsigned int buf_size = sizeof(html) + str_len(header) + 1;
-	char buf [buf_size];
-	os_memset(buf, 0, buf_size);
-	unsigned int i = 0;
-	while (i < sizeof(html))
-		buf[i] = html[i++];
-	while (i < buf_size)
-		buf[i] = header[i - sizeof(html)];
-	free(header);
+	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: %ld\r\n\r\n%s", sizeof(html), html);
 	printf("Sending now\r\n");
-	espconn_sent(esp_conn, buf, buf_size);
+	espconn_sent(esp_conn, header_html, str_len(header_html));
+	free(header_html);
 }
 
 // Will run if TCP connection is closed
