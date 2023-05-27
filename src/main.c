@@ -28,7 +28,7 @@ static void loop_task(ETSEvent* events)
 	printf("Hello from loop\n");
 }
 
-#define TIMER_ON 0
+#define TIMER_ON 1
 #define TIMER_INTERVAL 500
 #define TIMER_ARGS NULL
 
@@ -47,10 +47,22 @@ void ICACHE_FLASH_ATTR timer_func(void *arg)
 	*	There can be a potiental race condition with the loop.
 	*	Be careful.
 	*/
-	printf("Hello from timer\n");
+	if (GPIO_REG_READ(GPIO_IN_ADDRESS) & 0x2)
+		// Clear pin
+		GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 0x2);
+	else
+		// Set pin
+		GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 0x2);
 }
 
 #endif /* TIMER_ON */
+
+void init_done()
+{
+	// configure IO2 as output
+	GPIO_REG_WRITE(GPIO_ENABLE_W1TS_ADDRESS, BIT2);
+	web_server_init();
+}
 
 /* 
 *	The SDK calls user_init as the entry point function for the user
@@ -67,6 +79,7 @@ void user_init()
 {
 	// Initalize uart and set baud rate by setting the uart clock divider
 	uart_init(9600);
+	printf("Initialized UART\n");
 
 	#if TIMER_ON
 	os_timer_setfn(&timer, timer_func, TIMER_ARGS);
@@ -111,5 +124,5 @@ void user_init()
 
 	ets_task(loop_task, LOOP_TASK_PRIORITY, loop_queue, LOOP_QUEUE_LENGTH);
 
-	system_init_done_cb(&web_server_init);
+	system_init_done_cb(&init_done);
 }
