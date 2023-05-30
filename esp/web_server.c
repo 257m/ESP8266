@@ -5,36 +5,40 @@
 #include "osapi.h"
 #include "mem.h"
 #include "user_interface.h"
+#include "lwip/err.h"
+#include "lwip/dns.h"
+#include "lwip/dhcp.h"
+
 
 /// Custom libraries for uart_init, printf, gets, etc...
 #include "uart_io.h"
 #include "serial_io.h"
 #include "web_server.h"
 
-void web_server_init()
+void web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool static_ip)
 {
-	struct station_config stconfig = {
-		.ssid = SSID,
-		.password = PASSWORD,
-	};
-	stconfig.threshold.authmode = AUTH_WPA_WPA2_PSK;
-	stconfig.threshold.rssi = 84;
+	struct station_config stconfig;
+	str_cpy(stconfig.ssid, ssid, 32);
+	str_cpy(stconfig.passwd, passwd, 64);
+	stconfig.threshold.authmode = (str_len(PASSWORD) == 0) ? AUTH_OPEN : AUTH_WPA_PSK;
+	stconfig.threshold.rssi = -127;
+	stconfig.channel = channel;
+    stconfig.all_channel_scan = true;
+	stconfg.bssid = 0;
 
-	printf("connecting to %s with %s\r\nrssi: %d auth: %d\r\n", stconfig.ssid, stconfig.password, stconfig.threshold.rssi, stconfig.threshold.authmode);
+	printf("connecting to %s with %s\r\nthreshold rssi: %d auth: %d\r\n", stconfig.ssid, stconfig.password, stconfig.threshold.rssi, stconfig.threshold.authmode);
 
 	wifi_set_opmode(STATION_MODE);
-	wifi_station_set_hostname("Temp Hostname");
-
+	// wifi_station_set_hostname("Temp Hostname");
+	// I don't want to interrupted by UART while setting the wifi
+	ETS_UART_INTR_DISABLE();
 	if (!wifi_station_set_config(&stconfig))
 		printf("ESP8266 not set station config!\r\n");
-	if (wifi_station_dhcpc_status() == 0) {
-		printf("Starting DHCPC...\r\n");
-		wifi_station_dhcpc_start();
-	}
-
-	wifi_station_disconnect();
 	wifi_station_connect();
-
+	// Reenable for obvious reasons 
+	ETS_UART_INTR_ENABLE();
+	wifi_set_channel(channel);
+	wifi_station_dhcpc_start(!static_ip);
 	wifi_station_set_reconnect_policy(TRUE);
 	wifi_station_set_auto_connect(TRUE);
 
@@ -44,7 +48,7 @@ void web_server_init()
     esp_conn.type = ESPCONN_TCP;
     esp_conn.state = ESPCONN_NONE;
     esp_conn.proto.tcp = &esptcp;
-    esp_conn.proto.tcp->local_port = 79;
+    esp_conn.proto.tcp->local_port = 9701;
     esp_conn.recv_callback = NULL;
     esp_conn.sent_callback = NULL;
     esp_conn.reverse = NULL;

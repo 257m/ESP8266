@@ -17,7 +17,7 @@ void setup()
 {
 	uart_init(9600);
 	serial_write("Uart is functional\r\n");
-	web_server_init();
+	web_server_init("WRDSB Wireless", "", 6, true);
 }
 
 void loop()
