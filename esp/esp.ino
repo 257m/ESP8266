@@ -1,11 +1,11 @@
 extern "C" {
 	/// Proprietary SDK includes
-	#include <ets_sys.h>
-	#include <espconn.h>
-	#include <os_type.h>
-	#include <osapi.h>
-	#include <mem.h>
-	#include <user_interface.h>
+	#include "ets_sys.h"
+	#include "espconn.h"
+	#include "os_type.h"
+	#include "osapi.h"
+	#include "mem.h"
+	#include "user_interface.h"
 
 	/// Custom libraries for uart_init, printf, gets, etc...	
 	#include "uart_io.h"
