@@ -43,11 +43,11 @@ void web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool
 	wifi_station_set_auto_connect(TRUE);
 
     static struct espconn esp_conn;
-    static esp_tcp esptcp;
+    static esp_tcp esp_tcp;
     // Fill the connection structure, including "listen" port
     esp_conn.type = ESPCONN_TCP;
     esp_conn.state = ESPCONN_NONE;
-    esp_conn.proto.tcp = &esptcp;
+    esp_conn.proto.tcp = &esp_tcp;
     esp_conn.proto.tcp->local_port = 9701;
     esp_conn.recv_callback = NULL;
     esp_conn.sent_callback = NULL;
@@ -64,7 +64,7 @@ void web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool
 void web_server_listen(void* arg)
 {
     struct espconn* esp_conn = arg;
-
+	printf("Listening\n");
     espconn_regist_recvcb(esp_conn, web_server_receive);
     espconn_regist_reconcb(esp_conn, web_server_reconnect);
     espconn_regist_disconcb(esp_conn, web_server_disconnect);
@@ -87,10 +87,18 @@ void web_server_receive(void *arg, char *pusrdata, unsigned short length)
 void web_server_disconnect(void *arg)
 {
 	struct espconn* esp_conn = arg;
+
+	printf("%d.%d.%d.%d:%d disconnect\n", esp_conn->proto.tcp->remote_ip[0],
+            esp_conn->proto.tcp->remote_ip[1],esp_conn->proto.tcp->remote_ip[2],
+            esp_conn->proto.tcp->remote_ip[3],esp_conn->proto.tcp->remote_port);
 }
 
 // Will run if TCP disconnects
 void web_server_reconnect(void *arg, char err)
 {
 	struct espconn* esp_conn = arg;
+
+	printf("%d.%d.%d.%d:%d err %d reconnect\n", esp_conn->proto.tcp->remote_ip[0],
+        esp_conn->proto.tcp->remote_ip[1],esp_conn->proto.tcp->remote_ip[2],
+        esp_conn->proto.tcp->remote_ip[3],esp_conn->proto.tcp->remote_port, err);
 }
