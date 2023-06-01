@@ -158,8 +158,8 @@ unsigned int str_len(char* str)
 void str_cpy(char* dest, char* source, unsigned int size)
 {
 	while (dest < (dest + size) && *source)
-		dest++ = source++;
-	*(dest+1) = '\0'
+		*dest++ = *source++;
+	*dest = '\0';
 }
 
 void gets(char* str, unsigned int size)

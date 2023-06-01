@@ -5,10 +5,6 @@
 #include "osapi.h"
 #include "mem.h"
 #include "user_interface.h"
-#include "lwip/err.h"
-#include "lwip/dns.h"
-#include "lwip/dhcp.h"
-
 
 /// Custom libraries for uart_init, printf, gets, etc...
 #include "uart_io.h"
@@ -19,29 +15,32 @@ void web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool
 {
 	struct station_config stconfig;
 	str_cpy(stconfig.ssid, ssid, 32);
-	str_cpy(stconfig.passwd, passwd, 64);
-	stconfig.threshold.authmode = (str_len(PASSWORD) == 0) ? AUTH_OPEN : AUTH_WPA_PSK;
+	str_cpy(stconfig.password, passwd, 64);
+	stconfig.threshold.authmode = AUTH_WPA_WPA2_PSK;
 	stconfig.threshold.rssi = -127;
-	stconfig.channel = channel;
-    stconfig.all_channel_scan = true;
-	stconfg.bssid = 0;
+	//stconfig.channel = channel;
+   //stconfig.all_channel_scan = true;
+	//stconfg.bssid = 0;
 
 	printf("connecting to %s with %s\r\nthreshold rssi: %d auth: %d\r\n", stconfig.ssid, stconfig.password, stconfig.threshold.rssi, stconfig.threshold.authmode);
 
 	wifi_set_opmode(STATION_MODE);
-	// wifi_station_set_hostname("Temp Hostname");
+	wifi_station_set_hostname("ESP8266 Web Server");
 	// I don't want to interrupted by UART while setting the wifi
 	ETS_UART_INTR_DISABLE();
 	if (!wifi_station_set_config(&stconfig))
 		printf("ESP8266 not set station config!\r\n");
+  wifi_station_disconnect();
 	wifi_station_connect();
 	// Reenable for obvious reasons 
 	ETS_UART_INTR_ENABLE();
 	wifi_set_channel(channel);
-	wifi_station_dhcpc_start(!static_ip);
+  if (!static_ip && wifi_station_dhcpc_status() == 0)
+	  wifi_station_dhcpc_start();
+  else if (wifi_station_dhcpc_status() == 1)
+    wifi_station_dhcpc_stop();
 	wifi_station_set_reconnect_policy(TRUE);
 	wifi_station_set_auto_connect(TRUE);
-
     static struct espconn esp_conn;
     static esp_tcp esp_tcp;
     // Fill the connection structure, including "listen" port
@@ -58,7 +57,13 @@ void web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool
     espconn_regist_connectcb(&esp_conn, web_server_listen);
     // Start Listening for connections
     espconn_accept(&esp_conn);
-    printf("Web Server initialized\n");	
+    printf("Web Server initialized\n");
+    struct ip_info info;
+    wifi_get_ip_info(STATION_IF, &info);
+    printf("ip: %d:%d:%d:%d\tnetmask: %d:%d:%d:%d\tgw: %d:%d:%d:%d\r\n",
+    ((unsigned char*)&info.ip)[0], ((unsigned char*)&info.ip)[1], ((unsigned char*)&info.ip)[2], ((unsigned char*)&info.ip)[3],
+    ((unsigned char*)&info.netmask)[0], ((unsigned char*)&info.netmask)[1], ((unsigned char*)&info.netmask)[2], ((unsigned char*)&info.netmask)[3],
+    ((unsigned char*)&info.gw)[0], ((unsigned char*)&info.gw)[1], ((unsigned char*)&info.gw)[2], ((unsigned char*)&info.gw)[3]);	
 }
 
 void web_server_listen(void* arg)
