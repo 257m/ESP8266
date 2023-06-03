@@ -58,15 +58,15 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 	struct espconn* esp_conn = arg;
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
 	serial_write("Received data:"); // Would print pusrdata but not sure if null terminated
-  serial_write(pusrdata);
-  serial_write("\r\n");
+	serial_write(pusrdata);
+	serial_write("\r\n");
 	const char html [] = "<!DOCTYPE html><html>hello, world</html>";
 	//char header_html [256] = "";
 	//snprintf(header_html, sizeof(header_html), "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: close\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", sizeof(html), html);
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: close\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", sizeof(html), html);
 	printf("Sending now\r\n");
 	espconn_sent(esp_conn, header_html, str_len(header_html));
-  free(header_html);
+	free(header_html);
 }
 
 // Will run if TCP connection is closed
@@ -94,32 +94,32 @@ web_server_reconnect(void *arg, char err)
 LOCAL void ICACHE_FLASH_ATTR
 web_server_listen(void* arg)
 {
-  struct espconn* esp_conn = arg;
-  printf("Listening\n");
-  espconn_regist_recvcb(esp_conn, web_server_receive);
-  espconn_regist_reconcb(esp_conn, web_server_reconnect);
-  espconn_regist_disconcb(esp_conn, web_server_disconnect);
+ 	struct espconn* esp_conn = arg;
+	printf("Listening\n");
+	espconn_regist_recvcb(esp_conn, web_server_receive);
+	espconn_regist_reconcb(esp_conn, web_server_reconnect);
+	espconn_regist_disconcb(esp_conn, web_server_disconnect);
 }
 
 void ICACHE_FLASH_ATTR
 web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool static_ip)
 {
-  wifi_set_opmode(SOFTAP_MODE);
-  wifi_softap_dhcps_stop();
+	wifi_set_opmode(SOFTAP_MODE);
+	wifi_softap_dhcps_stop();
 
-  struct softap_config apconfig;
+	struct softap_config apconfig;
 
-  if (wifi_softap_get_config(&apconfig)) {
-    str_cpy(apconfig.ssid, ssid, 32);
-    str_cpy(apconfig.password, passwd, 64);
-    os_memcpy(apconfig.password, passwd, os_strlen(passwd));
-    apconfig.authmode = AUTH_OPEN;
-    apconfig.ssid_hidden = 0;
-    apconfig.max_connection = 4;
-    // apconfig.channel=7;
-    if (!wifi_softap_set_config(&apconfig))
-      printf("ESP8266 not set ap config!\r\n");
-  }
+	if (wifi_softap_get_config(&apconfig)) {
+		str_cpy(apconfig.ssid, ssid, 32);
+		str_cpy(apconfig.password, passwd, 64);
+		os_memcpy(apconfig.password, passwd, os_strlen(passwd));
+		apconfig.authmode = AUTH_OPEN;
+		apconfig.ssid_hidden = 0;
+		apconfig.max_connection = 4;
+		// apconfig.channel=7;
+		if (!wifi_softap_set_config(&apconfig))
+			printf("ESP8266 not set ap config!\r\n");
+	}
 
   wifi_set_event_handler_cb(wifi_handle_event);
   LOCAL struct ip_info info;
