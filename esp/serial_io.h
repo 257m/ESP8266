@@ -6,7 +6,7 @@
 #include <stddef.h>
 
 /// Proprietary SDK
-#include "mem.h"
+#include "lwip/mem.h"
 
 #include "uart_io.h"
 
@@ -50,5 +50,10 @@ extern unsigned int vsnprintf(char* buffer, unsigned int buffer_size, const char
 extern unsigned int printf(const char *format, ...);
 
 extern char* aprintf(const char *format, ...);
+
+#undef snprintf
+#define snprintf _snprintf
+
+unsigned int snprintf(char* buffer, unsigned int buffer_size, const char* format, ...);
 
 #endif /* SERIAL_IO_H */

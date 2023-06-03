@@ -139,7 +139,7 @@ unsigned int bfloattostrdec
 	bi += binttostr(buffer, buffer_size, bi, int_part, 10);
 	if (decimals) {
 		if (bi < buffer_size)
-		buffer[bi] = '.';
+		  buffer[bi] = '.';
 		bi++;
 		bi += buinttostr(buffer, buffer_size, bi, (unsigned int)(float_part * rudimentary_pow10(decimals)), 10);
 	}
@@ -221,10 +221,15 @@ unsigned int vsnprintf
 			}
 			fi++;
 		}
-		else
-			buffer[bi++] = format[fi++];
+		else {
+		  if (bi < buffer_size)
+			  buffer[bi] = format[fi];
+      bi++;
+      fi++;
+		}
 	}
-	buffer[bi] = '\0';
+  if (bi < buffer_size)
+    buffer[bi] = '\0';
 	return bi;
 }
 
@@ -262,4 +267,13 @@ char* aprintf(const char *format, ...) {
 	va_end(args);
  
 	return buffer;
+}
+
+unsigned int snprintf(char* buffer, unsigned int buffer_size, const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  unsigned int len = vsnprintf(buffer, buffer_size, format, args);
+  va_end(args);
+  return len;  
 }
