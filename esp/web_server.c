@@ -121,39 +121,39 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 			printf("ESP8266 not set ap config!\r\n");
 	}
 
-  wifi_set_event_handler_cb(wifi_handle_event);
-  LOCAL struct ip_info info;
-  IP4_ADDR(&info.ip, 192, 168, 22, 1);
-  IP4_ADDR(&info.gw, 192, 168, 22, 1);
-  IP4_ADDR(&info.netmask, 255, 255, 255, 0);
-  wifi_set_ip_info(SOFTAP_IF, &info);
-  
-  struct dhcps_lease dhcp_lease;
-  IP4_ADDR(&dhcp_lease.start_ip, 192, 168, 22, 2);
-  IP4_ADDR(&dhcp_lease.end_ip, 192, 168, 22, 5);
-  wifi_softap_set_dhcps_lease(&dhcp_lease);
-  
-  wifi_softap_dhcps_start();
+	wifi_set_event_handler_cb(wifi_handle_event);
+	LOCAL struct ip_info info;
+	IP4_ADDR(&info.ip, 192, 168, 22, 1);
+	IP4_ADDR(&info.gw, 192, 168, 22, 1);
+	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
+	wifi_set_ip_info(SOFTAP_IF, &info);
 
-  printf("SOFTAP Status:%d\r\n", wifi_softap_dhcps_status());
-  printf("Size of ESP8266: %d\r\n", sizeof(apconfig.ssid));
-  printf("Length of ESP8266: %d\r\n", os_strlen(apconfig.ssid));
+	struct dhcps_lease dhcp_lease;
+	IP4_ADDR(&dhcp_lease.start_ip, 192, 168, 22, 2);
+	IP4_ADDR(&dhcp_lease.end_ip, 192, 168, 22, 5);
+	wifi_softap_set_dhcps_lease(&dhcp_lease);
 
-  LOCAL struct espconn esp_conn;
-  LOCAL esp_tcp esptcp;
-  // Fill the connection structure, including "listen" port
-  esp_conn.type = ESPCONN_TCP;
-  esp_conn.state = ESPCONN_NONE;
-  esp_conn.proto.tcp = &esptcp;
-  esp_conn.proto.tcp->local_port = 80;
-  esp_conn.recv_callback = NULL;
-  esp_conn.sent_callback = NULL;
-  esp_conn.reverse = NULL;
-  // Register the connection timeout(-1=no timeout)
-  espconn_regist_time(&esp_conn, 0, 0);
-  // Register connection callback
-  espconn_regist_connectcb(&esp_conn, web_server_listen);
-  // Start Listening for connections
-  espconn_accept(&esp_conn);
-  printf("Web Server initialized\n");
+	wifi_softap_dhcps_start();
+
+	printf("SOFTAP Status:%d\r\n", wifi_softap_dhcps_status());
+	printf("Size of ESP8266: %d\r\n", sizeof(apconfig.ssid));
+	printf("Length of ESP8266: %d\r\n", os_strlen(apconfig.ssid));
+
+	LOCAL struct espconn esp_conn;
+	LOCAL esp_tcp esptcp;
+	// Fill the connection structure, including "listen" port
+	esp_conn.type = ESPCONN_TCP;
+	esp_conn.state = ESPCONN_NONE;
+	esp_conn.proto.tcp = &esptcp;
+	esp_conn.proto.tcp->local_port = 80;
+	esp_conn.recv_callback = NULL;
+	esp_conn.sent_callback = NULL;
+	esp_conn.reverse = NULL;
+	// Register the connection timeout(-1=no timeout)
+	espconn_regist_time(&esp_conn, 0, 0);
+	// Register connection callback
+	espconn_regist_connectcb(&esp_conn, web_server_listen);
+	// Start Listening for connections
+	espconn_accept(&esp_conn);
+	printf("Web Server initialized\n");
 }
