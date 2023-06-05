@@ -9,6 +9,7 @@
 /// Custom libraries for uart_init, printf, gets, etc...
 #include "uart_io.h"
 #include "serial_io.h"
+#include "string.h"
 #include "web_client.h"
 
 void wifi_handle_event(System_Event_t* evt)
