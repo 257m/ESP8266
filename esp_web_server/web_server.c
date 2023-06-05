@@ -61,9 +61,13 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 	serial_write("Received data:"); // Would print pusrdata but not sure if null terminated
 	serial_write(pusrdata);
 	serial_write("\r\n");
-	const char html [] = "<!DOCTYPE html><html>hello, world</html>";
-	//char header_html [256] = "";
-	//snprintf(header_html, sizeof(header_html), "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: close\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", sizeof(html), html);
+	const char html [] =
+	"<!DOCTYPE html><html>\r\n"
+	"<h1> ESP WEB SERVER <h1>\r\n"
+	"<form value=\"form\" method=\"get\">\r\n"
+	"Put in a value <input name=\"input\" type=\"text\">\r\n"
+	"<input type=\"submit\">\r\n"
+	"</form><html>\r\n";
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: close\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", sizeof(html), html);
 	printf("Sending now\r\n");
 	espconn_sent(esp_conn, header_html, str_len(header_html));
