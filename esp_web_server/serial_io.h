@@ -34,6 +34,8 @@ extern unsigned int bfloattostrdec(char* buffer, unsigned int buffer_size, unsig
 
 extern unsigned int str_len(char* str);
 
+extern char* str_find_char(char* str, char to_find);
+
 #undef gets
 #define gets _gets
 
