@@ -52,7 +52,7 @@ void wifi_handle_event(System_Event_t* evt)
 }
 
 // Will run when data is received
-LOCAL void ICACHE_FLASH_ATTR
+static void ICACHE_FLASH_ATTR
 web_server_receive(void *arg, char *pusrdata, unsigned short length)
 {
 	struct espconn* esp_conn = arg;
@@ -70,7 +70,7 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 }
 
 // Will run if TCP connection is closed
-LOCAL void ICACHE_FLASH_ATTR
+static void ICACHE_FLASH_ATTR
 web_server_disconnect(void *arg)
 {
 	struct espconn* esp_conn = arg;
@@ -81,7 +81,7 @@ web_server_disconnect(void *arg)
 }
 
 // Will run if TCP disconnects
-LOCAL void ICACHE_FLASH_ATTR
+static void ICACHE_FLASH_ATTR
 web_server_reconnect(void *arg, char err)
 {
 	struct espconn* esp_conn = arg;
@@ -91,7 +91,7 @@ web_server_reconnect(void *arg, char err)
 		esp_conn->proto.tcp->remote_ip[3],esp_conn->proto.tcp->remote_port, err);
 }
 
-LOCAL void ICACHE_FLASH_ATTR
+static void ICACHE_FLASH_ATTR
 web_server_listen(void* arg)
 {
  	struct espconn* esp_conn = arg;
@@ -122,7 +122,7 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 	}
 
 	wifi_set_event_handler_cb(wifi_handle_event);
-	LOCAL struct ip_info info;
+	static struct ip_info info;
 	IP4_ADDR(&info.ip, 192, 168, 22, 1);
 	IP4_ADDR(&info.gw, 192, 168, 22, 1);
 	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
@@ -139,8 +139,8 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 	printf("Size of ESP8266: %d\r\n", sizeof(apconfig.ssid));
 	printf("Length of ESP8266: %d\r\n", os_strlen(apconfig.ssid));
 
-	LOCAL struct espconn esp_conn;
-	LOCAL esp_tcp esptcp;
+	static struct espconn esp_conn;
+	static esp_tcp esptcp;
 	// Fill the connection structure, including "listen" port
 	esp_conn.type = ESPCONN_TCP;
 	esp_conn.state = ESPCONN_NONE;
