@@ -58,7 +58,7 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 {
 	struct espconn* esp_conn = arg;
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
-	serial_write("Received data:"); // Would print pusrdata but not sure if null terminated
+	serial_write("Received data:\r\n"); // Would print pusrdata but not sure if null terminated
 	serial_write(pusrdata);
 	serial_write("\r\n");
 	const char html [] =
