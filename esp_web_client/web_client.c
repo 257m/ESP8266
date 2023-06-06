@@ -52,27 +52,33 @@ void wifi_handle_event(System_Event_t* evt)
 	}
 }
 
-int atoi(char* str)
-{
-	int total = 0;
-	char isnegative = 1;
-	while ((*str >= '0' && *str <= '9') || *str == '-') {
-		if (*str == '-')
-			isnegative = -1;
-		total *= 10;
-		total += *str++;
-	}
-	total *= isnegative;
-	return total;
+static void ICACHE_FLASH_ATTR
+web_client_sent(void* arg) {
+	printf("---- SENDING ----\r\n");
+	struct espconn* conn = arg;
+	Request* req = conn->reverse;
+	if (!req->post_data)
+		return;
+	espconn_sent(conn, (uint8_t *)req->post_data, str_len(req->post_data));
+	free(req->post_data);
+	req->post_data = NULL;
 }
 
 static void ICACHE_FLASH_ATTR
-web_client_receive(void* arg)
+web_client_receive(void* arg, char* buf, unsigned short len)
 {
 	printf("---- RECEIVING ----\r\n");
 	struct espconn* conn = arg;
 	Request* req = conn->reverse;
-	
+	if (!req->buffer)
+		req->buffer = malloc(len);
+	else
+		req->buffer = realloc(req->buffer, req->buffer_size + len);
+	char* new_buf = req->buffer + req->buffer_size;
+	req->buffer_size += len
+	while (new_buf < req->buffer + req->buffer_size - 1)
+		*new_buf++ = *buf++;
+	*new_buf = '\0';
 }
 
 static void ICACHE_FLASH_ATTR
@@ -99,47 +105,36 @@ web_client_connect(void* arg)
 	printf("SENT REQUEST\r\n");
 }
 
-	static void ICACHE_FLASH_ATTR
+static void ICACHE_FLASH_ATTR
 web_client_disconnect(void* arg)
 {
+	printf("---- DISCONNECTED ----\r\n");
 	struct espconn* conn = arg;
 	if (!conn)
 		return;
 	if (conn->reverse) {
 		Request* req = conn->reverse;
-		int http_status = -1;
-		char * body = "";
-		if (!req->buffer)
-			os_printf("Buffer shouldn't be NULL\n");
-		else if (req->buffer[0] != '\0') {
-			const char* version = "HTTP/1.1 ";
-			if (os_strncmp(req->buffer, version, strlen(version)))
-				printf("Invalid version in %s\n", req->buffer);
-			else {
-				http_status = atoi(req->buffer + strlen(version));
-				body = (char *)os_strstr(req->buffer, "\r\n\r\n") + 4;
-				if(os_strstr(req->buffer, "Transfer-Encoding: chunked")) {
-					int body_size = req->buffer_size - (body - req->buffer);
-					char chunked_decode_buffer[body_size];
-					os_memset(chunked_decode_buffer, 0, body_size);
-					// Chunked data
-					chunked_decode(body, chunked_decode_buffer);
-					os_memcpy(body, chunked_decode_buffer, body_size);
-				}
-			}
-		}
+		if (req->user_callback)
+			req->user_callback(req);
 
-		if (req->user_callback != NULL) { // Callback is optional.
-			req->user_callback(body, http_status, req->buffer);
-		}
-
-		os_free(req->buffer);
-		os_free(req->hostname);
-		os_free(req->path);
-		os_free(req);
+		free(req->buffer);
+		free(req->hostname);
+		free(req->path);
+		free(req);
 	}
+	espconn_delete(conn);
+	if(conn->proto.tcp)
+		free(conn->proto.tcp);
+	free(conn);
 }
+
+static void ICACHE_FLASH_ATTR
+web_client_reconnect(void* arg, char error)
+{
+	printf("---- CONNECTION ERROR ----\r\n");
+	web_client_disconnect(arg);
 }
+
 
 void ICACHE_FLASH_ATTR
 dns_callback(const char* hostname, ip_addr_t addr, void* arg)
@@ -180,9 +175,8 @@ web_client_post(const char* url, const char* post_data, const char* headers, htt
 	req->secure = 0;
 	req->headers = str_dup(headers);
 	req->post_data = str_dup(post_data);
-	req->buffer_size = 1;
-	req->buffer = malloc(1);
-	*buffer = '\0';
+	req->buffer_size = 0;
+	req->buffer = NULL;
 	req->user_callback = user_callback;
 	ip_addr_t addr;
 	espconn_gethostbyname((struct espconn *)req, hostname, &addr, dns_callback);

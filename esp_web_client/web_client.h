@@ -1,9 +1,10 @@
 #ifndef WEB_SERVER_H
 #define WEB_SERVER_H
 
-typedef void (*http_callback)(char* response_body, int http_status, char* full_response);
+struct Request_t;
+typedef void (*http_callback)(Request_t* req);
 
-typedef struct {
+typedef struct Request_t {
 	char* path;
 	int port;
 	char* post_data;

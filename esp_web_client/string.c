@@ -34,3 +34,17 @@ char* str_dup(char* str)
 		*str_itr++ = *str++;
 	return new_str;
 }
+
+int atoi(char* str)
+{
+	int total = 0;
+	char isnegative = 1;
+	while ((*str >= '0' && *str <= '9') || *str == '-') {
+		if (*str == '-')
+			isnegative = -1;
+		total *= 10;
+		total += *str++;
+	}
+	total *= isnegative;
+	return total;
+}
