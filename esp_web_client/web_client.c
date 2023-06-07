@@ -75,7 +75,7 @@ web_client_receive(void* arg, char* buf, unsigned short len)
 	else
 		req->buffer = realloc(req->buffer, req->buffer_size + len);
 	char* new_buf = req->buffer + req->buffer_size;
-	req->buffer_size += len
+	req->buffer_size += len;
 	while (new_buf < req->buffer + req->buffer_size - 1)
 		*new_buf++ = *buf++;
 	*new_buf = '\0';
@@ -204,7 +204,7 @@ web_client_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 		stconfig.authmode = AUTH_OPEN;
 		stconfig.ssid_hidden = 0;
 		stconfig.max_connection = 4;
-		// stconfig.channel=7;
+		// stconfig.channel = channel;
 		if (!wifi_station_set_config(&stconfig))
 			printf("ESP8266 not set st config!\r\n");
 	}
