@@ -17,9 +17,15 @@ void setup()
 {
 	uart_init(9600);
 	//serial_write("Uart is functional\r\n");
-	web_client_init("EspWebServer", "PASSWORD", 6, false);
+	web_client_init("WRDSB Wireless", "", 6, false);
+}
+
+static void onreceive(Request* req)
+{
+  printf("Received\r\n");
 }
 
 void loop()
 {
+  web_client_get("google.com", "", onreceive);
 }

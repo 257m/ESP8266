@@ -1,3 +1,4 @@
+#include "string.h"
 #include "osapi.h"
 
 unsigned int str_len(char* str)

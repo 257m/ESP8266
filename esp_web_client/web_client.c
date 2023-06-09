@@ -137,7 +137,7 @@ web_client_reconnect(void* arg, char error)
 
 
 void ICACHE_FLASH_ATTR
-dns_callback(const char* hostname, ip_addr_t addr, void* arg)
+dns_callback(const char* hostname, ip_addr_t* addr, void* arg)
 {
 	struct espconn* conn = (struct espconn*)malloc(sizeof(struct espconn));
 	Request* req = arg;
@@ -148,9 +148,13 @@ dns_callback(const char* hostname, ip_addr_t addr, void* arg)
 	conn->proto.tcp->remote_port = req->port;
 	conn->reverse = req;
 
-	ip_addr_t addr;
-	espconn_gethostbyname((struct espconn*)req, req->hostname, &addr, dns_callback);
-	os_memcpy(conn->proto.tcp->remote_ip, addr, 4);
+  if (!addr) {
+	  ip_addr_t dns_addr;
+	  espconn_gethostbyname((struct espconn*)req, req->hostname, &dns_addr, dns_callback);
+	  os_memcpy(conn->proto.tcp->remote_ip, &dns_addr, 4);
+  }
+  else
+      os_memcpy(conn->proto.tcp->remote_ip, addr, 4);
 
 	espconn_regist_connectcb(conn, web_client_connect);
 	espconn_regist_disconcb(conn, web_client_disconnect);
@@ -164,7 +168,7 @@ web_client_post(const char* url, const char* post_data, const char* headers, htt
 {
 	Request* req = (Request*)malloc(sizeof(Request));
 	char* port_str = str_find_char(url, ':');
-	req->hostname = malloc(url - post_str);
+	req->hostname = malloc(url - port_str);
 	str_cpy(req->hostname, url, url - port_str);
 	req->port = 80;
 	if (port_str)
@@ -179,7 +183,7 @@ web_client_post(const char* url, const char* post_data, const char* headers, htt
 	req->buffer = NULL;
 	req->user_callback = user_callback;
 	ip_addr_t addr;
-	espconn_gethostbyname((struct espconn *)req, hostname, &addr, dns_callback);
+	espconn_gethostbyname((struct espconn *)req, req->hostname, &addr, dns_callback);
 	dns_callback(req->hostname, &addr, req);
 }
 
@@ -187,13 +191,13 @@ void ICACHE_FLASH_ATTR
 web_client_get(const char* url, const char* headers, http_callback onreceive)
 {
 	// Just a wrapper
-	web_client(url, NULL, headers, onreceive);
+	web_client_post(url, NULL, headers, onreceive);
 }
 void ICACHE_FLASH_ATTR
 web_client_init(const char* ssid, const char* passwd, uint8_t channel, bool static_ip)
 {
 	wifi_set_opmode(STATION_MODE);
-	wifi_station_dhcps_stop();
+	//wifi_station_dhcps_stop();
 
 	struct station_config stconfig;
 
@@ -201,9 +205,9 @@ web_client_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 		str_cpy(stconfig.ssid, ssid, 32);
 		str_cpy(stconfig.password, passwd, 64);
 		os_memcpy(stconfig.password, passwd, str_len(passwd));
-		stconfig.authmode = AUTH_OPEN;
-		stconfig.ssid_hidden = 0;
-		stconfig.max_connection = 4;
+		stconfig.threshold.authmode = AUTH_OPEN;
+		// stconfig.threshold.ssid_hidden = 0;
+		// stconfig.threshold.max_connection = 4;
 		// stconfig.channel = channel;
 		if (!wifi_station_set_config(&stconfig))
 			printf("ESP8266 not set st config!\r\n");
