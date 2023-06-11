@@ -6,43 +6,38 @@ extern "C" {
 	#include "osapi.h"
 	#include "mem.h"
 	#include "user_interface.h"
-	#include "esp_now.h"
+	#include "espnow.h"
 
 	/// Custom libraries for uart_init, printf, gets, etc...	
 	#include "uart_io.h"
 	#include "serial_io.h"
-	#include "web_server.h"
 }
 
 typedef struct {
 	int x, y;
 } Message;
+// Actual MAC of mega 0x2e,0xf4,0x32,0x4c,0xbe,0x11 
+unsigned char server_mac [] = {0x2e,0xf4,0x32,0x4c,0xbe,0x11};
 
-const uint8_t server_mac [] = {0x8c,0xce,0x4e,0xce,0x6a,0x14};
-
-esp_now_peer_info_t peer_info = {
-	.peer_addr = {0x8c,0xce,0x4e,0xce,0x6a,0x14},
-	.channel = 0,
-	.encrypt = 0,
-};
-
-void on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status)
+void on_data_sent(unsigned char *mac_addr, unsigned char status)
 {
-	
+	printf("Sent with status: %d\r\n", status);
 }
 
 void setup() {
+	uart_init(9600);
 	wifi_set_opmode(STATION_MODE);
 	if (esp_now_init())
 		printf("ERROR with esp_now_init\r\n");
+	esp_now_set_self_role(ESP_NOW_ROLE_CONTROLLER);
 	esp_now_register_send_cb(on_data_sent);
-	if (esp_now_add_peer(&peer_info))
+	if (esp_now_add_peer(server_mac, ESP_NOW_ROLE_SLAVE, 0, NULL, 16))
 		printf("Failed to add peer\n");
 }
 
 void loop() {
 	Message m = {10, 10};
-	if (esp_now_send(server_mac, &m, sizeof(Message)))
+	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
 		printf("SUCCESS\r\n");
 	else
 		printf("FAILED\r\n");
