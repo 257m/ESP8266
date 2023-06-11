@@ -53,9 +53,9 @@ extern unsigned int vsnprintf(char* buffer, unsigned int buffer_size, const char
 extern unsigned int printf(const char *format, ...);
 
 #if DEBUG
-#define PRINTF()
-#else
 #define PRINTF printf
+#else
+#define PRINTF()
 #endif /* DEBUG */
 
 extern char* aprintf(const char *format, ...);
