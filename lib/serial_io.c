@@ -195,7 +195,7 @@ unsigned int vsnprintf
 					}
 					break;
 				case 'x':
-					bi += buinttostr(buffer, buffer_size, bi, va_arg(args, unsigned int), 6);
+					bi += buinttostr(buffer, buffer_size, bi, va_arg(args, unsigned int), 16);
 					break;
 				case 'b':
 					bi += buinttostr(buffer, buffer_size, bi, va_arg(args, unsigned int), 2);
