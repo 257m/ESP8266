@@ -55,7 +55,7 @@ extern unsigned int printf(const char *format, ...);
 #if DEBUG
 #define PRINTF printf
 #else
-#define PRINTF()
+#define PRINTF(__VA_ARGS__)
 #endif /* DEBUG */
 
 extern char* aprintf(const char *format, ...);
