@@ -16,34 +16,34 @@ void wifi_handle_event(System_Event_t* evt)
 {
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
-			printf("connect to ssid %s, channel %d\n",
+			PRINTF("connect to ssid %s, channel %d\n",
 					evt->event_info.connected.ssid,
 					evt->event_info.connected.channel);
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
-			printf("disconnect from ssid %s, reason %d\n",
+			PRINTF("disconnect from ssid %s, reason %d\n",
 					evt->event_info.disconnected.ssid,
 					evt->event_info.disconnected.reason);
 			break;
 		case EVENT_STAMODE_AUTHMODE_CHANGE:
-			printf("mode: %d -> %d\n",
+			PRINTF("mode: %d -> %d\n",
 					evt->event_info.auth_change.old_mode,
 					evt->event_info.auth_change.new_mode);
 			break;
 		case EVENT_STAMODE_GOT_IP:
-			printf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR,
+			PRINTF("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR,
 					IP2STR(&evt->event_info.got_ip.ip),
 					IP2STR(&evt->event_info.got_ip.mask),
 					IP2STR(&evt->event_info.got_ip.gw));
-			printf("\n");
+			PRINTF("\n");
 			break;
 		case EVENT_SOFTAPMODE_STACONNECTED:
-			printf("station: " MACSTR "join, AID = %d\n",
+			PRINTF("station: " MACSTR "join, AID = %d\n",
 					MAC2STR(evt->event_info.sta_connected.mac),
 					evt->event_info.sta_connected.aid);
 			break;
 		case EVENT_SOFTAPMODE_STADISCONNECTED:
-			printf("station: " MACSTR "leave, AID = %d\n",
+			PRINTF("station: " MACSTR "leave, AID = %d\n",
 					MAC2STR(evt->event_info.sta_disconnected.mac),
 					evt->event_info.sta_disconnected.aid);
 			break;
@@ -68,7 +68,7 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 	"<input type=\"submit\" value\"FORWARD\">\r\n"
 	"</form><html>\r\n";
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", sizeof(html), html);
-	printf("Sending now\r\n");
+	PRINTF("Sending now\r\n");
 	espconn_sent(esp_conn, header_html, str_len(header_html));
 	free(header_html);
 }
@@ -79,7 +79,7 @@ web_server_disconnect(void *arg)
 {
 	struct espconn* esp_conn = arg;
 
-	printf("%d.%d.%d.%d:%d disconnect\n", esp_conn->proto.tcp->remote_ip[0],
+	PRINTF("%d.%d.%d.%d:%d disconnect\n", esp_conn->proto.tcp->remote_ip[0],
 			esp_conn->proto.tcp->remote_ip[1],esp_conn->proto.tcp->remote_ip[2],
 			esp_conn->proto.tcp->remote_ip[3],esp_conn->proto.tcp->remote_port);
 }
@@ -90,7 +90,7 @@ web_server_reconnect(void *arg, char err)
 {
 	struct espconn* esp_conn = arg;
 
-	printf("%d.%d.%d.%d:%d err %d reconnect\n", esp_conn->proto.tcp->remote_ip[0],
+	PRINTF("%d.%d.%d.%d:%d err %d reconnect\n", esp_conn->proto.tcp->remote_ip[0],
 		esp_conn->proto.tcp->remote_ip[1],esp_conn->proto.tcp->remote_ip[2],
 		esp_conn->proto.tcp->remote_ip[3],esp_conn->proto.tcp->remote_port, err);
 }
@@ -99,7 +99,7 @@ static void ICACHE_FLASH_ATTR
 web_server_listen(void* arg)
 {
  	struct espconn* esp_conn = arg;
-	printf("Listening\n");
+	PRINTF("Listening\n");
 	espconn_regist_recvcb(esp_conn, web_server_receive);
 	espconn_regist_reconcb(esp_conn, web_server_reconnect);
 	espconn_regist_disconcb(esp_conn, web_server_disconnect);
@@ -122,7 +122,7 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 		apconfig.max_connection = 4;
 		// apconfig.channel=7;
 		if (!wifi_softap_set_config(&apconfig))
-			printf("ESP8266 not set ap config!\r\n");
+			PRINTF("ESP8266 not set ap config!\r\n");
 	}
 
 	wifi_set_event_handler_cb(wifi_handle_event);
@@ -139,9 +139,9 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 
 	wifi_softap_dhcps_start();
 
-	printf("SOFTAP Status:%d\r\n", wifi_softap_dhcps_status());
-	printf("Size of ESP8266: %d\r\n", sizeof(apconfig.ssid));
-	printf("Length of ESP8266: %d\r\n", os_strlen(apconfig.ssid));
+	PRINTF("SOFTAP Status:%d\r\n", wifi_softap_dhcps_status());
+	PRINTF("Size of ESP8266: %d\r\n", sizeof(apconfig.ssid));
+	PRINTF("Length of ESP8266: %d\r\n", os_strlen(apconfig.ssid));
 
 	static struct espconn esp_conn;
 	static esp_tcp esptcp;
@@ -159,5 +159,5 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 	espconn_regist_connectcb(&esp_conn, web_server_listen);
 	// Start Listening for connections
 	espconn_accept(&esp_conn);
-	printf("Web Server initialized\n");
+	PRINTF("Web Server initialized\n");
 }

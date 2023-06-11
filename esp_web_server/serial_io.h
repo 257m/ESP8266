@@ -8,11 +8,12 @@
 /// Proprietary SDK
 #include "lwip/mem.h"
 
+#include "common.h"
 #include "uart_io.h"
 
 extern void serial_write(char* buffer);
 
-extern unsigned int serial_write_count(char* buffer);
+extern void serial_write_count(char* buffer, unsigned int len);
 
 extern unsigned int bstrnatt(char* buffer, unsigned int buffer_size, unsigned int bi, char* str);
 
@@ -50,6 +51,12 @@ extern unsigned int vsnprintf(char* buffer, unsigned int buffer_size, const char
 #define printf _printf
 
 extern unsigned int printf(const char *format, ...);
+
+#if DEBUG
+#define PRINTF()
+#else
+#define PRINTF printf
+#endif /* DEBUG */
 
 extern char* aprintf(const char *format, ...);
 
