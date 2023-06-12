@@ -11,6 +11,7 @@ extern "C" {
 	/// Custom libraries for uart_init, printf, gets, etc...	
 	#include "uart_io.h"
 	#include "serial_io.h"
+	#include "pin_io.h"
 }
 
 typedef struct {
@@ -37,12 +38,12 @@ void setup() {
 
 void loop() {
 	Message m;
-	digitalWrite(0, HIGH);
-	digitalWrite(1, LOW);
-	m.x = analogRead(A0);
-	digitalWrite(0, LOW);
-	digitalWrite(1, HIGH);
-	m.y = analogRead(A0);
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 4);
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 5);
+	m.x = system_adc_read();
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 4);
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 5);
+	m.y = system_adc_read();
   printf("Sent %d, %d\r\n", m.x, m.y);
 	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
 		printf("SUCCESS\r\n");
