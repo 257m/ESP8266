@@ -21,6 +21,7 @@
 #define RXC RXC0
 #define UDRE UDRE0
 #define USBS USBS0
+#define RCIE RCIE0
 
 // Sadly I need to use static state unless
 // I want to pass in the UART select for every function
@@ -38,14 +39,13 @@ inline bool uart_available()
 
 void uart_init(unsigned long baud_rate)
 {
-	unsigned long UBRR_value = F_CPU/8/baud_rate-1;
+	unsigned long UBRR_value = F_CPU/16/baud_rate-1;
 	// Not gonna trust the compiler and use UBBR
-	UBRRH = UBRR_value >> 8; // Set the H register
-	UBRRL = UBRR_value & 0xFF; // Set the L register
+	UBRRH = (unsigned char)(UBRR_value >> 8); // Set the H register
+	UBRRL = (unsigned char)UBRR_value; // Set the L register
 
-	UCSRA = _BV(U2X);
-	UCSRC = _BV(USBS) | _BV(UCSZ0) | _BV(UCSZ1); /* 8-bit data */
 	UCSRB = _BV(RXEN) | _BV(TXEN);   /* Enable RX and TX pins */ 
+	UCSRC = _BV(USBS) | (3 << UCSZ0); /* 8-bit data and 2 stop bits */
 }
 
 void uart_putchar(char c)

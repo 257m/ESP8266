@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <avr/io.h>
+#include <avr/interrupt.h> 
 
 #define F_CPU 16000000UL
 
