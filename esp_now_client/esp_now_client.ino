@@ -36,7 +36,13 @@ void setup() {
 }
 
 void loop() {
-	Message m = {10, 10};
+	Message m;
+	digitalWrite(0, HIGH);
+	digitalWrite(1, LOW);
+	m.x = analogRead(A0);
+	digitalWrite(0, LOW);
+	digitalWrite(1, HIGH);
+	m.y = analogRead(A0);
 	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
 		printf("SUCCESS\r\n");
 	else
