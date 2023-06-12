@@ -43,6 +43,7 @@ void loop() {
 	digitalWrite(0, LOW);
 	digitalWrite(1, HIGH);
 	m.y = analogRead(A0);
+  printf("Sent %d, %d\r\n", m.x, m.y);
 	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
 		printf("SUCCESS\r\n");
 	else
