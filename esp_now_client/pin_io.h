@@ -13,10 +13,13 @@
 #define GPIO_OUT_W1TS 0x60000304
 #define GPIO_OUT_W1TC 0x60000308
 #define GPIO_IN 0x60000318
+#define GPIO_ENABLE_W1TS 0x60000310
+#define GPIO_ENABLE_W1TC 0x60000314
 
-#defineS GPIO_REG_WRITE(addr, val) (*((volatile unsigned int*)addr)) = (1 << val)
+#define GPIO_REG_WRITE(addr, val) (*((volatile unsigned int*)addr)) = (1 << val)
 
 extern inline void set_pin(unsigned char pin, bool state);
 extern inline void read_pin(unsigned char pin);
+extern inline void set_pin_mode(unsigned char in, bool state);
 
 #endif /* PIN_IO_H */

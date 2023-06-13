@@ -27,6 +27,9 @@ void on_data_sent(unsigned char *mac_addr, unsigned char status)
 
 void setup() {
 	uart_init(9600);
+  pinMode(16, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(A0, INPUT);
 	wifi_set_opmode(STATION_MODE);
 	if (esp_now_init())
 		printf("ERROR with esp_now_init\r\n");
@@ -38,11 +41,11 @@ void setup() {
 
 void loop() {
 	Message m;
-	set_pin(4, HIGH);
-	set_pin(5, LOW);
+	digitalWrite(16, HIGH);
+	digitalWrite(5, LOW);
 	m.x = system_adc_read();
-	set_pin(4, LOW);
-	set_pin(5, HIGH);
+	digitalWrite(16, LOW);
+	digitalWrite(5, HIGH);
 	m.y = system_adc_read();
   printf("Sent %d, %d\r\n", m.x, m.y);
 	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
