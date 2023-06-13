@@ -38,11 +38,11 @@ void setup() {
 
 void loop() {
 	Message m;
-	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 4);
-	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 5);
+	set_pin(4, HIGH);
+	set_pin(5, LOW);
 	m.x = system_adc_read();
-	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 4);
-	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 5);
+	set_pin(4, LOW);
+	set_pin(5, HIGH);
 	m.y = system_adc_read();
   printf("Sent %d, %d\r\n", m.x, m.y);
 	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
