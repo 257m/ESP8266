@@ -5,8 +5,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h> 
 
-#define F_CPU 16000000UL
-
 #ifdef loop_until_bit_is_set
 #undef loop_until_bit_is_set
 #endif

@@ -6,8 +6,7 @@ extern "C" {
 
 void setup()
 {
-	//uart_select(2);
-	uart_init(9600);
+	Serial.begin(9600);
 	serial_write("Uart is functional\r\n");
 }
 
