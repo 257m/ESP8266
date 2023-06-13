@@ -40,12 +40,14 @@ inline bool uart_available()
 void uart_init(unsigned long baud_rate)
 {
 	unsigned long UBRR_value = F_CPU/16/baud_rate-1;
+
+	UCSRA = 0x0;
+	UCSRB = _BV(RXEN) | _BV(TXEN);   // Enable RX and TX pins
+	UCSRC = _BV(USBS) | _BV(UCSZ0) | _BV(UCSZ1); // 8-bit data and 2 stop bits
+
 	// Not gonna trust the compiler and use UBBR
 	UBRRH = (unsigned char)(UBRR_value >> 8); // Set the H register
 	UBRRL = (unsigned char)UBRR_value; // Set the L register
-
-	UCSRB = _BV(RXEN) | _BV(TXEN);   /* Enable RX and TX pins */ 
-	UCSRC = _BV(USBS) | (3 << UCSZ0); /* 8-bit data and 2 stop bits */
 }
 
 void uart_putchar(char c)
@@ -68,7 +70,7 @@ void uart_putchar_safe(char c)
 }
 
 char uart_getchar(void) {
-  // loop_until_bit_is_set(UCSRA, UDRE); /* Don't read what you wrote *
+  // loop_until_bit_is_set(UCSRA, UDRE); /* Don't read what you wrote */
   loop_until_bit_is_set(UCSRA, RXC); /* Wait until data exists. */
   return UDR;
 }
