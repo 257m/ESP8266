@@ -12,6 +12,8 @@
 #include "string.h"
 #include "web_server.h"
 
+static double temperature, pressure, pressure_altitude, density_altitude = 0;
+
 void wifi_handle_event(System_Event_t* evt)
 {
 	switch (evt->event) {
@@ -58,19 +60,19 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 {
 	struct espconn* esp_conn = arg;
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
-	serial_write("Received data:\r\n"); // Would print pusrdata but not sure if null terminated
-	serial_write(pusrdata);
-	serial_write("\r\n");
-	const char html [] =
-	"<!DOCTYPE html><html>\r\n"
-	"<h1> ESP WEB SERVER <h1>\r\n"
-	"<form action\"/index.html?cmd=\"FORWARD\" method=\"get\">\r\n"
-	"<input type=\"submit\" value\"FORWARD\">\r\n"
-	"</form><html>\r\n";
-	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", sizeof(html), html);
+	PRINTF("Received data:\r\n%s\r\n", pusrdata); // not sure if null terminated
+	char* html = aprintf("<!DOCTYPE html><html><h1>WEATHER SENSING ROVER</h1><p>"
+	                     "TEMPERATURE READING: %lf degrees<br>"
+	                     "PRESSURE: %lf PA | %lf inHg<br>"
+	                     "PRESSURE ALTITUDE: %lf ft<br>"
+	                     "DENSITY ALTITUDE: %lf ft<br>"
+	                     "</p></html>",
+						 temperature, pressure, pressure_altitude, density_altitude;
+	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", str_len(html), html);
 	PRINTF("Sending now\r\n");
 	espconn_sent(esp_conn, header_html, str_len(header_html));
 	free(header_html);
+	free(html);
 }
 
 // Will run if TCP connection is closed
