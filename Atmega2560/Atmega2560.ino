@@ -3,7 +3,6 @@ extern "C" {
   #include "serial_io.h"
 }
 
-
 #define DEBUG 1
 
 typedef struct {
@@ -31,7 +30,7 @@ const int DEADZONE = 10;
 void setup() {
   Serial.begin(9600);
   Serial3.begin(9600);
-  uart_select(2);
+  uart_select(3);
   pinMode(enA, OUTPUT);
   pinMode(in1A, OUTPUT);
   pinMode(in2A, OUTPUT);
@@ -46,9 +45,9 @@ void setup() {
 
 void loop() {
   if (uart_available())
-    uart_memcpy(&joy, sizeof(joy));
-  joy.x = abs(analogRead(vry)) >= DEADZONE ? analogRead(vrx)/2-255 : joy.x;
-  joy.y = abs(analogRead(vrx)) >= DEADZONE ? analogRead(vry)/2-255 : joy.y;
+    uart_memcpy((unsigned char*)&joy, sizeof(joy));
+  //joy.x = abs(analogRead(vry)) >= DEADZONE ? analogRead(vrx)/2-255 : joy.x;
+  //joy.y = abs(analogRead(vrx)) >= DEADZONE ? analogRead(vry)/2-255 : joy.y;
   
   setMotor(enA, in1A, in2A, joy.x);
   setMotor(enB, in1B, in2B, joy.y);

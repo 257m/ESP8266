@@ -34,7 +34,7 @@ void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 	PRINTF("MAC_ADDR: %x:%x:%x:%x\r\n", mac[0], mac[1], mac[2], mac[3]);
 	PRINTF("Length: %d\r\n", len);
 	PRINTF("DATA: %d, %d\r\n", m.x, m.y);
-	#if DEBUG
+	#if !DEBUG
 	serial_write_count((char*)&m, len);
 	#endif /* DEBUG */
 }

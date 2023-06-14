@@ -43,7 +43,7 @@ void loop() {
 
 	while (!bmp180.hasValue());
 
-  temperature = bmp180.getTemperature();
+	temperature = bmp180.getTemperature();
 
 	Serial.print("Temperature: "); 
 	Serial.print(temperature); 
@@ -51,7 +51,7 @@ void loop() {
 
 
 
-  // Always use right after temperature measurement
+	// Always use right after temperature measurement
 	if (!bmp180.measurePressure())
 	{
 		Serial.println("Could not start pressure measurement");
@@ -60,8 +60,8 @@ void loop() {
 
 	while (!bmp180.hasValue());
   
-  pressure = bmp180.getPressure()+pressureOffSet*100*33.864;
-  
+	pressure = bmp180.getPressure()+pressureOffSet*100*33.864;
+
 	Serial.print("Pressure: "); 
 	Serial.print(pressure);
 	Serial.print(" Pa | ");
@@ -77,9 +77,9 @@ void loop() {
 	Serial.println(" ft");
 
 
-	
+
 	densityAltitude = pressureAltitude + (120 * (temperature - (15 - fieldElevation/1000*2)));
-  Serial.print("Density Altitude:");
+	Serial.print("Density Altitude:");
 	Serial.print(densityAltitude);
 	Serial.println(" ft\n\n");
 }
