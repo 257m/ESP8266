@@ -1,5 +1,3 @@
-
-#include <Arduino.h>
 #include <Wire.h>
 
 #include <BMP180I2C.h>
@@ -7,6 +5,7 @@
 #define I2C_ADDRESS 0x77
 
 #define fieldElevation 880 // Cambridge elevation
+#define pressureOffSet 0.89 // Sensor offset
 
 BMP180I2C bmp180(I2C_ADDRESS);
 
@@ -34,7 +33,7 @@ void setup() {
 }
 
 void loop() {
-	delay(1000);
+	delay(2000);
 
 	if (!bmp180.measureTemperature())
 	{
@@ -61,26 +60,26 @@ void loop() {
 
 	while (!bmp180.hasValue());
   
-  pressure = bmp180.getPressure();
+  pressure = bmp180.getPressure()+pressureOffSet*100*33.864;
   
 	Serial.print("Pressure: "); 
 	Serial.print(pressure);
 	Serial.print(" Pa | ");
-	Serial.print(pressure/33.864);
+	Serial.print(pressure/33.864/100);
 	Serial.println(" inHg");
 	
 	
 	
-	pressureAltitude = (pressure/33.864 - 29.92) * 1000 + fieldElevation;
+	pressureAltitude = ((pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
 	
 	Serial.print("Pressure Altitude: ");
 	Serial.print(pressureAltitude);
-	Serial.print(" ft");
+	Serial.println(" ft");
+
+
 	
-	
-	
-	densityAltitude = pressureAltitude + (120 * (temperature – (15 - fieldElevation/1000*2)));
-	Serial.print("Density Altitude: ");
+	densityAltitude = pressureAltitude + (120 * (temperature - (15 - fieldElevation/1000*2)));
+  Serial.print("Density Altitude:");
 	Serial.print(densityAltitude);
-	Serial.print(" ft");
+	Serial.println(" ft\n\n");
 }
