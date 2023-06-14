@@ -27,9 +27,9 @@ void on_data_sent(unsigned char *mac_addr, unsigned char status)
 
 void setup() {
 	uart_init(9600);
-  pinMode(16, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(A0, INPUT);
+	pinMode(16, OUTPUT);
+	pinMode(5, OUTPUT);
+	pinMode(A0, INPUT);
 	wifi_set_opmode(STATION_MODE);
 	if (esp_now_init())
 		printf("ERROR with esp_now_init\r\n");

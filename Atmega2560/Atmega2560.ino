@@ -1,11 +1,23 @@
+extern "C" {
+  #include "uart_io.h"
+  #include "serial_io.h"
+}
+
+
+#define DEBUG 1
+
+typedef struct {
+	int x, y;
+} Message;
+
+Message joy = {0, 0};
+
 // Left motor
-int speedA = 0;
 #define enA 8
 #define in1A 7
 #define in2A 6
 
 // Right motor
-int speedB = 0;
 #define enB A2
 #define in1B 9
 #define in2B 10
@@ -18,7 +30,8 @@ const int DEADZONE = 10;
 
 void setup() {
   Serial.begin(9600);
-  
+  Serial3.begin(9600);
+  uart_select(2);
   pinMode(enA, OUTPUT);
   pinMode(in1A, OUTPUT);
   pinMode(in2A, OUTPUT);
@@ -32,15 +45,18 @@ void setup() {
 }
 
 void loop() {
-  delay(25);
-  speedA = abs(analogRead(vry)) >= DEADZONE ? analogRead(vrx)/2-255 : speedA;
-  speedB = abs(analogRead(vrx)) >= DEADZONE ? analogRead(vry)/2-255 : speedB;
+  if (uart_available())
+    uart_memcpy(&joy, sizeof(joy));
+  joy.x = abs(analogRead(vry)) >= DEADZONE ? analogRead(vrx)/2-255 : joy.x;
+  joy.y = abs(analogRead(vrx)) >= DEADZONE ? analogRead(vry)/2-255 : joy.y;
   
-  setMotor(enA, in1A, in2A, speedA);
-  setMotor(enB, in1B, in2B, speedB);
-  Serial.print(speedA);
+  setMotor(enA, in1A, in2A, joy.x);
+  setMotor(enB, in1B, in2B, joy.y);
+#if DEBUG
+  Serial.print(joy.x);
   Serial.print("  ");
-  Serial.println(speedB);
+  Serial.println(joy.y);
+#endif /* DEBUG */
 }
 
 
