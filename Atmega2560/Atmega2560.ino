@@ -46,8 +46,8 @@ void setup() {
 void loop() {
   if (uart_available())
     uart_memcpy((unsigned char*)&joy, sizeof(joy));
-  //joy.x = abs(analogRead(vry)) >= DEADZONE ? analogRead(vrx)/2-255 : joy.x;
-  //joy.y = abs(analogRead(vrx)) >= DEADZONE ? analogRead(vry)/2-255 : joy.y;
+  joy.x = (joy.x/2)-255;
+  joy.y = (joy.y/2)-255;
 
   setMotor(enA, in1A, in2A, joy.x);
   setMotor(enB, in1B, in2B, joy.y);
