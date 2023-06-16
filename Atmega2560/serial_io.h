@@ -7,7 +7,7 @@
 
 extern void serial_write(char* buffer);
 
-extern unsigned int serial_write_count(char* buffer);
+extern void serial_write_count(char* buffer, unsigned int len);
 
 extern unsigned int bstrnatt(char* buffer, unsigned int buffer_size, unsigned int bi, char* str);
 

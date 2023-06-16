@@ -12,7 +12,11 @@
 #include "string.h"
 #include "web_server.h"
 
-static double temperature, pressure, pressure_altitude, density_altitude = 0;
+typedef struct {
+	double temperature, pressure, pressure_altitude, density_altitude;
+} Sensor_Reading;
+
+static Sensor_Reading sr;
 
 void wifi_handle_event(System_Event_t* evt)
 {
@@ -56,18 +60,20 @@ void wifi_handle_event(System_Event_t* evt)
 
 // Will run when data is received
 static void ICACHE_FLASH_ATTR
-web_server_receive(void *arg, char *pusrdata, unsigned short length)
+web_server_receive(void* arg, char* pusrdata, unsigned short length)
 {
 	struct espconn* esp_conn = arg;
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
 	PRINTF("Received data:\r\n%s\r\n", pusrdata); // not sure if null terminated
+	uart_putchar(1);
+	uart_memcpy((unsigned char*)&sr, sizeof(Sensor_Reading)); 
 	char* html = aprintf("<!DOCTYPE html><html><h1>WEATHER SENSING ROVER</h1><p>"
 	                     "TEMPERATURE READING: %lf degrees<br>"
 	                     "PRESSURE: %lf PA | %lf inHg<br>"
 	                     "PRESSURE ALTITUDE: %lf ft<br>"
 	                     "DENSITY ALTITUDE: %lf ft<br>"
 	                     "</p></html>",
-						 temperature, pressure, pressure_altitude, density_altitude;
+						 sr.temperature, sr.pressure, sr.pressure_altitude, sr.density_altitude;
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", str_len(html), html);
 	PRINTF("Sending now\r\n");
 	espconn_sent(esp_conn, header_html, str_len(header_html));
@@ -77,7 +83,7 @@ web_server_receive(void *arg, char *pusrdata, unsigned short length)
 
 // Will run if TCP connection is closed
 static void ICACHE_FLASH_ATTR
-web_server_disconnect(void *arg)
+web_server_disconnect(void* arg)
 {
 	struct espconn* esp_conn = arg;
 
@@ -88,7 +94,7 @@ web_server_disconnect(void *arg)
 
 // Will run if TCP disconnects
 static void ICACHE_FLASH_ATTR
-web_server_reconnect(void *arg, char err)
+web_server_reconnect(void* arg, char err)
 {
 	struct espconn* esp_conn = arg;
 

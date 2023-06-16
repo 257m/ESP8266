@@ -9,7 +9,13 @@ typedef struct {
 	int x, y;
 } Message;
 
+typedef struct {
+	double temperature, pressure, pressure_altitude, density_altitude;
+} Sensor_Reading;
+
 Message joy = {0, 0};
+
+Sensor_Reading sr;
 
 // Left motor
 #define enA 8
@@ -25,7 +31,7 @@ Message joy = {0, 0};
 #define vry A1
 #define sw 11
 
-const int DEADZONE = 10;
+// const int DEADZONE = 10;
 
 void setup() {
   Serial.begin(9600);
@@ -34,18 +40,22 @@ void setup() {
   pinMode(enA, OUTPUT);
   pinMode(in1A, OUTPUT);
   pinMode(in2A, OUTPUT);
-  
+
   pinMode(enB, OUTPUT);
   pinMode(in1B, OUTPUT);
   pinMode(in2B, OUTPUT);
-  
+
   pinMode(vrx, INPUT);
   pinMode(vry, INPUT);
 }
 
-void loop() {
+void loop()
+{
   if (uart_available())
-    uart_memcpy((unsigned char*)&joy, sizeof(joy));
+    if (uart_getchar())
+      serial_write_count((unsigned char*)&sr), sizeof(Sensor_Reading));
+    else
+      uart_memcpy((unsigned char*)&joy, sizeof(joy));
   joy.x = (joy.x/2)-255;
   joy.y = (joy.y/2)-255;
 
@@ -57,7 +67,6 @@ void loop() {
   Serial.println(joy.y);
 #endif /* DEBUG */
 }
-
 
 void setMotor(int en, int in1, int in2, int speed) {
   digitalWrite(in1, speed < 0);

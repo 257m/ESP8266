@@ -28,14 +28,16 @@ typedef struct {
 
 void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 {
+	#if DEBUG
 	Message m;
 	// Casts because -fpermissive
 	mem_cpy((unsigned char*)&m, (unsigned char*)data, len);
-	PRINTF("MAC_ADDR: %x:%x:%x:%x\r\n", mac[0], mac[1], mac[2], mac[3]);
-	PRINTF("Length: %d\r\n", len);
-	PRINTF("DATA: %d, %d\r\n", m.x, m.y);
-	#if !DEBUG
-	serial_write_count((char*)&m, len);
+	printf("MAC_ADDR: %x:%x:%x:%x\r\n", mac[0], mac[1], mac[2], mac[3]);
+	printf("Length: %d\r\n", len);
+	printf("DATA: %d, %d\r\n", m.x, m.y);
+	#else
+	uart_putchar(0);
+	serial_write_count((char*)&data, len);
 	#endif /* DEBUG */
 }
 

@@ -40,7 +40,12 @@ void uart_putchar(unsigned char c)
 unsigned char uart_getchar()
 {
 	Uart* uart = UART_BASE;
-	
-	while (uart->status & ST_RX_MASK);
+
+	while (!(uart->status & ST_RX_MASK));
 	return uart->fifo;
 }
+
+void uart_memcpy(unsigned char* dest, unsigned int len)
+{
+	while (len--)
+		*dest = uart_getchar();

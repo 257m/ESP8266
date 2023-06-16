@@ -122,5 +122,6 @@ extern void uart_init(int baud);
 extern void uart_fifo_reset(void);
 extern void uart_putchar(unsigned char c);
 extern unsigned char uart_getchar(void);
+extern void uart_memcpy(unsigned char* dest, unsigned int len);
 
 #endif /* UART_IO_H */

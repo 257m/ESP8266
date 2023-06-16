@@ -6,12 +6,10 @@ void serial_write(char* buffer)
     uart_putchar(*(buffer++));
 }
 
-unsigned int serial_write_count(char* buffer)
+void serial_write_count(char* buffer, unsigned int len)
 {
-  unsigned int i = 0;
-  while (buffer[i] != '\0')
-  	uart_putchar(buffer[i++]);
-  return i;
+	while (len--)
+		uart_putchar(*buffer++);
 }
 
 unsigned int bstrnatt
