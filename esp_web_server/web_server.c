@@ -12,12 +12,18 @@
 #include "string.h"
 #include "web_server.h"
 
+/*
+ * Structure for storing sensor readings
+ * The reason this is a structure is I need to ensure that they next to each
+ * other in memory so I can pass a pointer to my uart_memcpy function
+*/
 typedef struct {
-	double temperature, pressure, pressure_altitude, density_altitude;
+	float temperature, pressure, pressure_altitude, density_altitude;
 } Sensor_Reading;
 
 static Sensor_Reading sr;
 
+// Print debug information on wifi event
 void wifi_handle_event(System_Event_t* evt)
 {
 	switch (evt->event) {
@@ -62,21 +68,28 @@ void wifi_handle_event(System_Event_t* evt)
 static void ICACHE_FLASH_ATTR
 web_server_receive(void* arg, char* pusrdata, unsigned short length)
 {
+	// arg is a pointer to our esp connection
 	struct espconn* esp_conn = arg;
+	// We want to reuse this ip address
 	espconn_set_opt(esp_conn, ESPCONN_REUSEADDR);
 	PRINTF("Received data:\r\n%s\r\n", pusrdata); // not sure if null terminated
+	// Send a one through uart to tell the atmega to send it's sensor readings
 	uart_putchar(1);
 	uart_memcpy((unsigned char*)&sr, sizeof(Sensor_Reading)); 
+	// Some basic html for a webpage
 	char* html = aprintf("<!DOCTYPE html><html><h1>WEATHER SENSING ROVER</h1><p>"
-	                     "TEMPERATURE READING: %lf degrees<br>"
-	                     "PRESSURE: %lf PA | %lf inHg<br>"
-	                     "PRESSURE ALTITUDE: %lf ft<br>"
-	                     "DENSITY ALTITUDE: %lf ft<br>"
+	                     "TEMPERATURE READING: %f degrees<br>"
+	                     "PRESSURE: %f PA | %f inHg<br>"
+	                     "PRESSURE ALTITUDE: %f ft<br>"
+	                     "DENSITY ALTITUDE: %f ft<br>"
 	                     "</p></html>",
 						 sr.temperature, sr.pressure, sr.pressure_altitude, sr.density_altitude;
+	// Create a html header and tack on the file at the end of it
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", str_len(html), html);
 	PRINTF("Sending now\r\n");
+	// Send the html to the client
 	espconn_sent(esp_conn, header_html, str_len(header_html));
+	// Free the allocated html
 	free(header_html);
 	free(html);
 }
@@ -103,6 +116,7 @@ web_server_reconnect(void* arg, char err)
 		esp_conn->proto.tcp->remote_ip[3],esp_conn->proto.tcp->remote_port, err);
 }
 
+// Sets callback once espconn_accept is called
 static void ICACHE_FLASH_ATTR
 web_server_listen(void* arg)
 {
@@ -113,14 +127,16 @@ web_server_listen(void* arg)
 	espconn_regist_disconcb(esp_conn, web_server_disconnect);
 }
 
+// Initialize web server
 void ICACHE_FLASH_ATTR
 web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool static_ip)
 {
+	// We need AP mode to create our own wifi
 	wifi_set_opmode(SOFTAP_MODE);
 	wifi_softap_dhcps_stop();
 
 	struct softap_config apconfig;
-
+	// Fill in the strucutre with ssid and password
 	if (wifi_softap_get_config(&apconfig)) {
 		str_cpy(apconfig.ssid, ssid, 32);
 		str_cpy(apconfig.password, passwd, 64);
@@ -132,14 +148,16 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 		if (!wifi_softap_set_config(&apconfig))
 			PRINTF("ESP8266 not set ap config!\r\n");
 	}
-
+	// Set the event callback function
 	wifi_set_event_handler_cb(wifi_handle_event);
+	// Set our static ip
 	static struct ip_info info;
 	IP4_ADDR(&info.ip, 192, 168, 22, 1);
 	IP4_ADDR(&info.gw, 192, 168, 22, 1);
 	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
 	wifi_set_ip_info(SOFTAP_IF, &info);
 
+	// Initialize dhcp
 	struct dhcps_lease dhcp_lease;
 	IP4_ADDR(&dhcp_lease.start_ip, 192, 168, 22, 2);
 	IP4_ADDR(&dhcp_lease.end_ip, 192, 168, 22, 5);
@@ -165,7 +183,7 @@ web_server_init(const char* ssid, const char* passwd, uint8_t channel, bool stat
 	espconn_regist_time(&esp_conn, 0, 0);
 	// Register connection callback
 	espconn_regist_connectcb(&esp_conn, web_server_listen);
-	// Start Listening for connections
+	// Start listening for connections
 	espconn_accept(&esp_conn);
 	PRINTF("Web Server initialized\n");
 }

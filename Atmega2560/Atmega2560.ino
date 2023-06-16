@@ -3,10 +3,13 @@ extern "C" {
   #include "serial_io.h"
 }
 
-#define DEBUG 1
+#define DEBUG 0
 
+// Structures for joystick data and sensor reading
+// These have to be type long and double because
+// atmega 2560 is 8 bit while esp8266 is 32 bit
 typedef struct {
-	int x, y;
+	long x, y;
 } Message;
 
 typedef struct {
@@ -51,14 +54,20 @@ void setup() {
 
 void loop()
 {
+  // Check if there is new data to read
   if (uart_available())
+    // If there is then check if it a one or zero
     if (uart_getchar())
+      // If it is a one send the sensor reading
       serial_write_count((unsigned char*)&sr), sizeof(Sensor_Reading));
     else
+      // If it is a zero read the joystick data
       uart_memcpy((unsigned char*)&joy, sizeof(joy));
+  // Map joystick data to motor speeds
   joy.x = (joy.x/2)-255;
   joy.y = (joy.y/2)-255;
 
+  // Set the motor to joystick speeds
   setMotor(enA, in1A, in2A, joy.x);
   setMotor(enB, in1B, in2B, joy.y);
 #if DEBUG

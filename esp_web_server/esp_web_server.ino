@@ -22,13 +22,16 @@ void mem_cpy(unsigned char* dest, unsigned char* source, unsigned int len)
 
 unsigned char server_mac [] = {0x2e,0xf4,0x32,0x4c,0xbe,0x11};
 
+// Structure for message
 typedef struct {
 	int x, y;
 } Message;
 
+// Will run when data is received
 void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 {
 	#if DEBUG
+	// Print out data received
 	Message m;
 	// Casts because -fpermissive
 	mem_cpy((unsigned char*)&m, (unsigned char*)data, len);
@@ -36,6 +39,7 @@ void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 	printf("Length: %d\r\n", len);
 	printf("DATA: %d, %d\r\n", m.x, m.y);
 	#else
+	// Send zero through uart to tell atmega we are sending joystick data
 	uart_putchar(0);
 	serial_write_count((char*)&data, len);
 	#endif /* DEBUG */
@@ -43,12 +47,17 @@ void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 
 void setup()
 {
+	// Initialize uart at 9600 baud
 	uart_init(9600);
+	// Initialize web server with ssid EspWebServ
 	web_server_init("EspWebServer", "PASSWORD", 6, false);
+	// Initialize esp now
 	if (esp_now_init()) {
 		PRINTF("Error initializing ESP-NOW");
 	}
+	// Set role as slave (joystick esp is the controller)
 	esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
+	// Set the callback function
 	esp_now_register_recv_cb(on_data_recv);
 }
 
