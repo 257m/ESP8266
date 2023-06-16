@@ -45,7 +45,8 @@ unsigned char uart_getchar()
 	return uart->fifo;
 }
 
-void uart_memcpy(unsigned char* dest, unsigned int len)
+/*void uart_memcpy(unsigned char* dest, unsigned int len)
 {
 	while (len--)
 		*dest = uart_getchar();
+}*/

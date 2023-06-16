@@ -3,7 +3,7 @@ extern "C" {
   #include "serial_io.h"
 }
 
-#define DEBUG 0
+#define DEBUG 1
 
 #include "Wire.h"
 #include "BMP180I2C.h"
@@ -21,7 +21,7 @@ typedef struct {
 } Message;
 
 typedef struct {
-	double temperature, pressure, pressure_altitude, density_altitude;
+	double temperature, pressure, pressureAltitude, densityAltitude;
 } Sensor_Reading;
 
 Message joy = {0, 0};
@@ -63,7 +63,7 @@ void setup() {
 
   if (!bmp180.begin())  {
     Serial.println("begin() failed");
-    while (1);
+    ///while (1);
   }
 
   bmp180.resetToDefaults();
@@ -80,37 +80,37 @@ void loop()
       // Measure readings with sensors
       bmp180.measureTemperature();
       while (!bmp180.hasValue());
-      temperature = bmp180.getTemperature();
+      sr.temperature = bmp180.getTemperature();
 #if DEBUG
       Serial.print("Temperature: "); 
-      Serial.print(temperature); 
+      Serial.print(sr.temperature); 
       Serial.println(" degC");
 #endif /* DEBUG */
       // Always use right after temperature measurement
       bmp180.measurePressure();
       while (!bmp180.hasValue());
-      pressure = bmp180.getPressure()+pressureOffSet*100*33.864;
+      sr.pressure = bmp180.getPressure()+pressureOffSet*100*33.864;
 #if DEBUG
       Serial.print("Pressure: "); 
-      Serial.print(pressure);
+      Serial.print(sr.pressure);
       Serial.print(" Pa | ");
-      Serial.print(pressure/33.864/100);
+      Serial.print(sr.pressure/33.864/100);
       Serial.println(" inHg");
 #endif /* DEBUG */
-      pressureAltitude = ((pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
+      sr.pressureAltitude = ((sr.pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
 #if DEBUG
       Serial.print("Pressure Altitude: ");
-      Serial.print(pressureAltitude);
+      Serial.print(sr.pressureAltitude);
       Serial.println(" ft");
 #endif
-      densityAltitude = pressureAltitude + (120 * (temperature - (15 - fieldElevation/1000*2)));
+      sr.densityAltitude = sr.pressureAltitude + (120 * (sr.temperature - (15 - fieldElevation/1000*2)));
 #if DEBUG
       Serial.print("Density Altitude:");
-      Serial.print(densityAltitude);
+      Serial.print(sr.densityAltitude);
       Serial.println(" ft\n\n");
 #endif /* DEBUG */
       // If it is a one send the sensor reading
-      serial_write_count((unsigned char*)&sr), sizeof(Sensor_Reading));
+      serial_write_count((unsigned char*)&sr, sizeof(Sensor_Reading));
     }
     else {
       // If it is a zero read the joystick data
