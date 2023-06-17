@@ -26,7 +26,7 @@ typedef struct {
 
 Message joy = {0, 0};
 
-Sensor_Reading sr;
+Sensor_Reading sr = {1.5};
 
 // Left motor
 #define enA 8
