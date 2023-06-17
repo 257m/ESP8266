@@ -28,14 +28,14 @@ void uart_fifo_reset(void)
 	uart->conf0 &= ~(C_TX_RESET | C_RX_RESET);
 }
 
-void uart_putchar(unsigned char c)
+/*void uart_putchar(unsigned char c)
 {
 	Uart* uart = UART_BASE;
 	// Wait for ongoing UART processes to finish
 	while (uart->status & ST_TX_MASK);
 	// Add the character to the fifo queue
 	uart->fifo = (unsigned int) c;
-}
+}*/
 
 unsigned char uart_getchar()
 {

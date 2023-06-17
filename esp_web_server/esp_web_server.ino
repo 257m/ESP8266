@@ -14,7 +14,10 @@ extern "C" {
 	#include "web_server.h"
 }
 
-extern "C" void uart_memcpy(unsigned char* dest, unsigned int len);
+void uart_putchar(unsigned char c)
+{
+	Serial.write(c);
+}
 
 void uart_memcpy(unsigned char* dest, unsigned int len)
 {
@@ -56,7 +59,7 @@ void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 void setup()
 {
 	// Initialize uart at 9600 baud
-	uart_init(9600);
+	Serial.begin(9600);
 	// Initialize web server with ssid EspWebServ
 	web_server_init("EspWebServer", "PASSWORD", 6, false);
 	// Initialize esp now

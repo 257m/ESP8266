@@ -26,7 +26,7 @@ typedef struct {
 
 Message joy = {0, 0};
 
-Sensor_Reading sr = {1.5};
+Sensor_Reading sr = {1.5f, 1.5f, 1.5f, 1.5f};
 
 // Left motor
 #define enA 8
@@ -47,8 +47,6 @@ BMP180I2C bmp180(I2C_ADDRESS);
 
 void setup() {
 	Serial.begin(9600);
-	Serial3.begin(9600);
-	uart_select(3);
 	/*const char start_msg [] = "START\r\n";
 	for (unsigned int i = 0;i < sizeof(start_msg);) {
 		if (start_msg[i] == uart_getchar())
@@ -69,7 +67,7 @@ void setup() {
 	Wire.begin();
 
 	if (!bmp180.begin())  {
-		Serial.println("begin() failed");
+		//Serial.println("begin() failed");
 		///while (1);
 	}
 
@@ -80,13 +78,9 @@ void setup() {
 
 void loop()
 {
-	int tmp = 0;
+		while (!Serial.available());
 		// If there is then check if it a one or zero
-		if (tmp = uart_getchar()) {
-#if DEBUG
-			Serial.print("Starting Read:");
-			Serial.println(tmp);
-#endif
+		if (Serial.read()) {
 			// Measure readings with sensors
 			/*
 			bmp180.measureTemperature();
@@ -111,24 +105,24 @@ void loop()
 			Serial.print(sr.pressure/33.864/100);
 			Serial.println(" inHg");
 #endif /* DEBUG */
-			sr.pressureAltitude = ((sr.pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
+			//sr.pressureAltitude = ((sr.pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
 #if DEBUG
 			Serial.print("Pressure Altitude: ");
 			Serial.print(sr.pressureAltitude);
 			Serial.println(" ft");
 #endif
-			sr.densityAltitude = sr.pressureAltitude + (120 * (sr.temperature - (15 - fieldElevation/1000*2)));
+			//sr.densityAltitude = sr.pressureAltitude + (120 * (sr.temperature - (15 - fieldElevation/1000*2)));
 #if DEBUG
 			Serial.print("Density Altitude:");
 			Serial.print(sr.densityAltitude);
 			Serial.println(" ft\n\n");
 #endif /* DEBUG */
 			// If it is a one send the sensor reading
-			serial_write_count((unsigned char*)&sr, sizeof(Sensor_Reading));
+			Serial.write((unsigned char*)&sr, sizeof(Sensor_Reading));
 		}
 		else {
 			// If it is a zero read the joystick data
-			uart_memcpy((unsigned char*)&joy, sizeof(joy));
+			Serial.readBytes((unsigned char*)&joy, sizeof(joy));
 			// Map joystick data to motor speeds
 			joy.x = (joy.x/2)-255;
 			joy.y = (joy.y/2)-255;

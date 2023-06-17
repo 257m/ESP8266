@@ -21,7 +21,7 @@ typedef struct {
 	float temperature, pressure, pressure_altitude, density_altitude;
 } Sensor_Reading;
 
-static Sensor_Reading sr;
+Sensor_Reading sr;
 
 // Print debug information on wifi event
 void wifi_handle_event(System_Event_t* evt)
@@ -83,7 +83,7 @@ web_server_receive(void* arg, char* pusrdata, unsigned short length)
 	                     "PRESSURE ALTITUDE: %f ft<br>"
 	                     "DENSITY ALTITUDE: %f ft<br>"
 	                     "</p></html>",
-						 sr.temperature, sr.pressure, sr.pressure_altitude, sr.density_altitude);
+						 sr.temperature, sr.pressure, sr.pressure/33.864/100, sr.pressure_altitude, sr.density_altitude);
 	// Create a html header and tack on the file at the end of it
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", strlen(html), html);
 	PRINTF("Sending now\r\n");
