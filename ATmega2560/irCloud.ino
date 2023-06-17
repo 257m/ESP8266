@@ -1,4 +1,4 @@
-#define IRPin 15
+/*#define IRPin 15
 int val;
 String text;
 
@@ -22,3 +22,4 @@ void loop() {
   
   Serial.println(text);
 }
+*/

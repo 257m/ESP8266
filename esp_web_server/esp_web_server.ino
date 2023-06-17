@@ -14,6 +14,13 @@ extern "C" {
 	#include "web_server.h"
 }
 
+extern "C" void uart_memcpy(unsigned char* dest, unsigned int len);
+
+void uart_memcpy(unsigned char* dest, unsigned int len)
+{
+  Serial.readBytes(dest, len);  
+}
+
 void mem_cpy(unsigned char* dest, unsigned char* source, unsigned int len)
 {
 	while (len--)

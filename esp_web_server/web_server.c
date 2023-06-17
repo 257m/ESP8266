@@ -83,9 +83,9 @@ web_server_receive(void* arg, char* pusrdata, unsigned short length)
 	                     "PRESSURE ALTITUDE: %f ft<br>"
 	                     "DENSITY ALTITUDE: %f ft<br>"
 	                     "</p></html>",
-						 sr.temperature, sr.pressure, sr.pressure_altitude, sr.density_altitude;
+						 sr.temperature, sr.pressure, sr.pressure_altitude, sr.density_altitude);
 	// Create a html header and tack on the file at the end of it
-	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", str_len(html), html);
+	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", strlen(html), html);
 	PRINTF("Sending now\r\n");
 	// Send the html to the client
 	espconn_sent(esp_conn, header_html, str_len(header_html));

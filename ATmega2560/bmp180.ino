@@ -1,4 +1,4 @@
-#include <Wire.h>
+/*#include <Wire.h>
 
 #include <BMP180I2C.h>
 
@@ -7,7 +7,7 @@
 #define fieldElevation 880 // Cambridge elevation
 #define pressureOffSet 0.89 // Sensor offset
 
-BMP180I2C bmp180(I2C_ADDRESS);
+//BMP180I2C bmp180(I2C_ADDRESS);
 
 double pressure;
 double temperature;
@@ -83,3 +83,4 @@ void loop() {
 	Serial.print(densityAltitude);
 	Serial.println(" ft\n\n");
 }
+*/
