@@ -29,7 +29,10 @@ static unsigned char uart_selected = 0;
 
 inline void uart_select(unsigned char selected)
 {
-  uart_selected = selected;
+	if (selected == 3)
+		uart_selected = 14;
+	else
+		uart_selected = selected;
 }
 
 inline bool uart_available()
