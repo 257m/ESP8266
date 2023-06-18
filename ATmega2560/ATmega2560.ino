@@ -66,9 +66,8 @@ void setup() {
 	pinMode(vry, INPUT);
 	Wire.begin();
 
-	if (!bmp180.begin())  {
-		//Serial.println("begin() failed");
-		///while (1);
+	if (!bmp180.begin() && DEBUG)  {
+		Serial.println("begin() failed");
 	}
 
 	bmp180.resetToDefaults();
@@ -82,22 +81,18 @@ void loop()
 		// If there is then check if it a one or zero
 		if (Serial.read()) {
 			// Measure readings with sensors
-			/*
 			bmp180.measureTemperature();
 			while (!bmp180.hasValue());
 			sr.temperature = bmp180.getTemperature();
-			*/
 #if DEBUG
 			Serial.print("Temperature: "); 
 			Serial.print(sr.temperature); 
 			Serial.println(" degC");
 #endif /* DEBUG */
 			// Always use right after temperature measurement
-			/*
 			bmp180.measurePressure();
 			while (!bmp180.hasValue());
 			sr.pressure = bmp180.getPressure()+pressureOffSet*100*33.864;
-			*/
 #if DEBUG
 			Serial.print("Pressure: "); 
 			Serial.print(sr.pressure);
@@ -105,13 +100,13 @@ void loop()
 			Serial.print(sr.pressure/33.864/100);
 			Serial.println(" inHg");
 #endif /* DEBUG */
-			//sr.pressureAltitude = ((sr.pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
+			sr.pressureAltitude = ((sr.pressure/33.864/100) - 29.92) * 1000 + fieldElevation;
 #if DEBUG
 			Serial.print("Pressure Altitude: ");
 			Serial.print(sr.pressureAltitude);
 			Serial.println(" ft");
 #endif
-			//sr.densityAltitude = sr.pressureAltitude + (120 * (sr.temperature - (15 - fieldElevation/1000*2)));
+			sr.densityAltitude = sr.pressureAltitude + (120 * (sr.temperature - (15 - fieldElevation/1000*2)));
 #if DEBUG
 			Serial.print("Density Altitude:");
 			Serial.print(sr.densityAltitude);

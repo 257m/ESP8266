@@ -19,6 +19,7 @@ typedef struct {
 } Message;
 // Actual MAC of mega 0x2e,0xf4,0x32,0x4c,0xbe,0x11 
 unsigned char server_mac [] = {0x2e,0xf4,0x32,0x4c,0xbe,0x11};
+unsigned char broadcast_mac [] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 
 void on_data_sent(unsigned char *mac_addr, unsigned char status)
 {
@@ -48,7 +49,7 @@ void loop() {
 	digitalWrite(5, HIGH);
 	m.y = system_adc_read();
 	printf("Sent %d, %d\r\n", m.x, m.y);
-	if (esp_now_send(server_mac, (unsigned char*)&m, sizeof(Message)))
+	if (esp_now_send(broadcast_mac, (unsigned char*)&m, sizeof(Message)))
 		printf("SUCCESS\r\n");
 	else
 		printf("FAILED\r\n");

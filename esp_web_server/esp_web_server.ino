@@ -60,8 +60,13 @@ void setup()
 {
 	// Initialize uart at 9600 baud
 	Serial.begin(9600);
+	//wifi_set_macaddr(SOFTAP_IF, server_mac);
 	// Initialize web server with ssid EspWebServ
 	web_server_init("EspWebServer", "PASSWORD", 6, false);
+#if DEBUG
+	wifi_get_macaddr(SOFTAP_IF, server_mac);
+	printf("%d, %d, %d, %d\r\n", server_mac[0], server_mac[1], server_mac[2], server_mac[3]);
+#endif
 	// Initialize esp now
 	if (esp_now_init()) {
 		PRINTF("Error initializing ESP-NOW");
