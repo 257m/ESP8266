@@ -51,8 +51,8 @@ void on_data_recv(uint8_t* mac, uint8_t* data, unsigned char len)
 	printf("DATA: %d, %d\r\n", m.x, m.y);
 	#else
 	// Send zero through uart to tell atmega we are sending joystick data
-	uart_putchar(0);
-	serial_write_count((char*)data, len);
+	Serial.write(0);
+	Serial.write((unsigned char*)data, len);
 	#endif /* DEBUG */
 }
 
@@ -60,13 +60,8 @@ void setup()
 {
 	// Initialize uart at 9600 baud
 	Serial.begin(9600);
-	//wifi_set_macaddr(SOFTAP_IF, server_mac);
 	// Initialize web server with ssid EspWebServ
 	web_server_init("EspWebServer", "PASSWORD", 6, false);
-#if DEBUG
-	wifi_get_macaddr(SOFTAP_IF, server_mac);
-	printf("%d, %d, %d, %d\r\n", server_mac[0], server_mac[1], server_mac[2], server_mac[3]);
-#endif
 	// Initialize esp now
 	if (esp_now_init()) {
 		PRINTF("Error initializing ESP-NOW");

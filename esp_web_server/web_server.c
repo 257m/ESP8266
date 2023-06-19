@@ -19,6 +19,7 @@
 */
 typedef struct {
 	float temperature, pressure, pressure_altitude, density_altitude;
+	unsigned short int ir_cloud, sound;
 } Sensor_Reading;
 
 Sensor_Reading sr;
@@ -64,6 +65,15 @@ void wifi_handle_event(System_Event_t* evt)
 	}
 }
 
+char* get_cloud_str(unsigned short int val)
+{
+	if (val < 160)
+		return "Overcast/broken cloud layer.";
+	if (val < 200)
+		return "Scattered cloud layer.";
+	return "Clear sunny skies!";
+}
+
 // Will run when data is received
 static void ICACHE_FLASH_ATTR
 web_server_receive(void* arg, char* pusrdata, unsigned short length)
@@ -75,15 +85,18 @@ web_server_receive(void* arg, char* pusrdata, unsigned short length)
 	PRINTF("Received data:\r\n%s\r\n", pusrdata); // not sure if null terminated
 	// Send a one through uart to tell the atmega to send it's sensor readings
 	uart_putchar(1);
-	uart_memcpy((unsigned char*)&sr, sizeof(Sensor_Reading)); 
+	uart_memcpy((unsigned char*)&sr, 16); 
 	// Some basic html for a webpage
 	char* html = aprintf("<!DOCTYPE html><html><h1>WEATHER SENSING ROVER</h1><p>"
 	                     "TEMPERATURE READING: %f degrees<br>"
 	                     "PRESSURE: %f PA | %f inHg<br>"
 	                     "PRESSURE ALTITUDE: %f ft<br>"
 	                     "DENSITY ALTITUDE: %f ft<br>"
+						 "IR CLOUD READING: %d | %s<br>"
+						 "SOUND READING: %d<br>"
 	                     "</p></html>",
-						 sr.temperature, sr.pressure, sr.pressure/33.864/100, sr.pressure_altitude, sr.density_altitude);
+						 sr.temperature, sr.pressure, sr.pressure/33.864/100, sr.pressure_altitude, sr.density_altitude,
+						 sr.ir_cloud, get_cloud_str(sr.ir_cloud), sr.sound);
 	// Create a html header and tack on the file at the end of it
 	char* header_html = aprintf("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\n%s\r\n\r\n", strlen(html), html);
 	PRINTF("Sending now\r\n");
