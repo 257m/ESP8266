@@ -58,6 +58,10 @@ void setup() {
 
 void loop() {
 	m.x += digitalRead(16)*1 + digitalRead(5)*-1;
+	if (m.x < 0)
+		m.x = 0;
+	else if (m.x > 1023)
+		m.x = 1023;
 	m.y = system_adc_read();
 #if DEBUG
 	printf("Sent %d, %d\r\n", m.x, m.y);
